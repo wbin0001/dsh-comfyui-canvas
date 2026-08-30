@@ -1,0 +1,53 @@
+{
+  "name": "dsh-comfyui-canvas",
+  "version": "0.2.0",
+  "description": "Embed the local ComfyUI frontend as a split-screen canvas tab in DeepSeek Harness, and give the agent live canvas tools: read/edit/run workflows, debug errors, manage the canvas. Ships the ComfyUI-side bridge node too.",
+  "type": "module",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-name/dsh-comfyui-canvas.git"
+  },
+  "homepage": "https://github.com/your-name/dsh-comfyui-canvas",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README.zh.md",
+    "cordis.patch.yml",
+    "lib",
+    "comfyui-bridge"
+  ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": ">=0.1.1-rc.2",
+    "@deepseek-ai/dsh-settings": ">=0.1.1-rc.2",
+    "@deepseek-ai/schemastery": ">=3.18.0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": { "optional": true },
+    "@deepseek-ai/dsh-settings": { "optional": true },
+    "@deepseek-ai/schemastery": { "optional": true }
+  },
+  "scripts": {
+    "check": "node --check lib/index.js && node --check lib/client.js"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    },
+    "bundle": { "patch": "./cordis.patch.yml" }
+  }
+}

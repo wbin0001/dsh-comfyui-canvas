@@ -1,0 +1,9 @@
+# dsh-comfyui-canvas bundle layer: applied automatically when the package is
+# installed (package.json declares dsh.bundle.patch), i.e. a profile that runs
+# `dsh plugin add github:<you>/dsh-comfyui-canvas` gets this wiring without any
+# manual cordis.patch.yml edits. Later layers override these rows by id.
+
+# 挂载插件行：注册 host 端画布工具 + client 端画布标签页/设置页。
+- insert:
+    - id: comfyui-canvas
+      name: dsh-comfyui-canvas
