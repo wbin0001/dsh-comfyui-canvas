@@ -1,0 +1,12 @@
+# Python bytecode (bridge node)
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
