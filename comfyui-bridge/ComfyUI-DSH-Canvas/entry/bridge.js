@@ -198,6 +198,14 @@ async function executeCommand(cmd, payload) {
       return { valid: offendingIds.length === 0, nodeErrors, offendingIds };
     }
 
+    // M3: ask the frontend to re-report the current graph immediately, so
+    // comfyui_read_workflow does not serve a stale cache when the page is
+    // open but idle (no recent change to trigger a debounced report).
+    case "refresh_report": {
+      report();
+      return { reported: true };
+    }
+
     default:
       throw new Error(`unknown command: ${cmd}`);
   }

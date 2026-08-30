@@ -111,12 +111,25 @@ async def command(request):
         return web.Response(status=400, text="expected { cmd, ... }")
 
     cmd_id = data.get("id") or uuid.uuid4().hex
+    target = _latest.get("client_id")
+    if not target:
+        # No frontend has reported yet, so there is no safe single executor.
+        # Broadcasting would make every open tab run the command (duplicates).
+        # Refuse with a diagnostic instead — the caller should read the canvas
+        # first (comfyui_read_workflow triggers a refresh_report), which
+        # establishes the target clientId.
+        return web.json_response({
+            "ok": False,
+            "accepted": False,
+            "id": cmd_id,
+            "error": "no ComfyUI frontend has reported yet — read the canvas once (or open the ComfyUI page) so the bridge can target a single tab",
+        })
     payload = {
         "id": cmd_id,
         "cmd": data.get("cmd"),
         "payload": data.get("payload", {}),
         # Only the frontend that last reported should act on the command.
-        "target": _latest.get("client_id"),
+        "target": target,
     }
     try:
         server.PromptServer.instance.send_sync("dsh-bridge-command", payload)
