@@ -1,6 +1,6 @@
 # dsh-comfyui-canvas（DSH 画布插件）
 
-你的 **ComfyUI 画布副驾**，运行在 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web 里。ComfyUI 变成对话旁的分屏画布标签，agent 操作**你正在看的那张工作流——而且是可视化操作**：加节点、连线、改参数、运行，每一步都实时应用在你眼前的画布上；出图也直接带回对话。所见即 agent 所做：是副驾，不是黑盒。
+把本机 **ComfyUI** 以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，让 agent 像**副驾**一样实时操作你眼前的工作流——读写、改节点、连线、运行、查错，所见即所得，全程不离开对话。
 
 本仓库集成了 **DSH 侧插件（画布副驾）+ ComfyUI 侧桥接节点**。需要无人值守 / 规模化执行时，可配合官方 ComfyUI MCP 服务器使用——见[「画布驱动 vs MCP」](#画布驱动-vs-mcp两种操控-comfyui-的方式)。
 
