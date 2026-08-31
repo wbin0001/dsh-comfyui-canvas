@@ -186,16 +186,32 @@ async function executeCommand(cmd, payload) {
     // M3: validate — structural checks only, never submits /prompt, so a valid
     // graph is NOT queued (unlike `run`). Flags nodes with unconnected required
     // inputs so the agent can locate/fix errors without spending a generation.
+    // Dynamic-slot nodes (switch / index / selector, or numbered inputs like
+    // `image15`) intentionally leave trailing slots unconnected — those are
+    // reported as warnings, never as errors, so debug does not false-flag them.
     case "validate": {
       const nodeErrors = {};
+      const warnings = {};
       for (const node of graph?.nodes ?? []) {
-        const missing = (node.inputs ?? [])
-          .filter((input) => input.link == null && !input.optional && !input.widget)
-          .map((input) => `missing required input "${input.name}"`);
+        const missing = [];
+        const dynamic = [];
+        for (const input of node.inputs ?? []) {
+          if (input.link == null && !input.optional && !input.widget) {
+            const type = String(node.type ?? "");
+            const isDynamicSlot = /switch|index|selector|multi/i.test(type)
+              || /^(image|input|value|mask|opt|optional)\d+$/i.test(input.name);
+            (isDynamicSlot ? dynamic : missing).push(
+              isDynamicSlot
+                ? `dynamic slot "${input.name}" unconnected (switch/index node — expected)`
+                : `missing required input "${input.name}"`,
+            );
+          }
+        }
         if (missing.length) nodeErrors[String(node.id)] = missing;
+        if (dynamic.length) warnings[String(node.id)] = dynamic;
       }
       const offendingIds = Object.keys(nodeErrors);
-      return { valid: offendingIds.length === 0, nodeErrors, offendingIds };
+      return { valid: offendingIds.length === 0, nodeErrors, warnings, offendingIds };
     }
 
     // M3: ask the frontend to re-report the current graph immediately, so
