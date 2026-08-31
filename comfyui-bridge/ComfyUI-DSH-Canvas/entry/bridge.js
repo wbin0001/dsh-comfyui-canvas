@@ -158,19 +158,82 @@ async function executeCommand(cmd, payload) {
     }
 
     // M2: run the current canvas graph (queuePrompt) and report the task id.
+    // `overrides` (optional) temporarily sets widget values before the graph
+    // is compiled, then restores them — the canvas is left untouched, so the
+    // same graph can be run repeatedly with different seeds/prompts.
     case "run": {
       if (typeof app.graphToPrompt !== "function") {
         throw new Error("this ComfyUI frontend lacks app.graphToPrompt");
       }
-      const { output } = await app.graphToPrompt();
-      const resp = await api.fetchApi("/prompt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: output }),
-      });
-      const json = await resp.json().catch(() => null);
-      if (!resp.ok) throw new Error(json?.error?.message ?? `prompt HTTP ${resp.status}`);
-      return { promptId: json.prompt_id, nodeErrors: json.node_errors ?? null };
+      const overrides = Array.isArray(payload.overrides) ? payload.overrides : [];
+      // Snapshot the touched widgets so we can restore them afterwards.
+      const saved = [];
+      for (const o of overrides) {
+        const node = graph.getNodeById(+o.nodeId);
+        if (!node) throw new Error(`override node not found: ${o.nodeId}`);
+        const widget = (node.widgets ?? []).find((w) => w.name === o.key);
+        if (!widget) throw new Error(`override widget not found: ${o.nodeId}.${o.key}`);
+        saved.push({ node, widget, prev: widget.value });
+        widget.value = o.value;
+      }
+      try {
+        const { output } = await app.graphToPrompt();
+        const resp = await api.fetchApi("/prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: output }),
+        });
+        const json = await resp.json().catch(() => null);
+        if (!resp.ok) throw new Error(json?.error?.message ?? `prompt HTTP ${resp.status}`);
+        return { promptId: json.prompt_id, nodeErrors: json.node_errors ?? null };
+      } finally {
+        // Restore regardless of outcome so the canvas is never left altered.
+        for (const s of saved) {
+          s.widget.value = s.prev;
+          s.node.setDirtyCanvas?.(true, true);
+        }
+      }
+    }
+
+    // M4: batch run — execute the graph once per override set (a parameter
+    // matrix), queueing each as its own prompt. Returns the prompt ids in the
+    // same order as the runs. ComfyUI executes the queue serially, so this is
+    // a convenient way to sweep seeds / prompts / strengths.
+    case "batch_run": {
+      if (typeof app.graphToPrompt !== "function") {
+        throw new Error("this ComfyUI frontend lacks app.graphToPrompt");
+      }
+      const runs = Array.isArray(payload.runs) ? payload.runs : [];
+      const results = [];
+      for (const run of runs ?? []) {
+        const overrides = Array.isArray(run.overrides) ? run.overrides : [];
+        const saved = [];
+        for (const o of overrides) {
+          const node = graph.getNodeById(+o.nodeId);
+          if (!node) throw new Error(`override node not found: ${o.nodeId}`);
+          const widget = (node.widgets ?? []).find((w) => w.name === o.key);
+          if (!widget) throw new Error(`override widget not found: ${o.nodeId}.${o.key}`);
+          saved.push({ node, widget, prev: widget.value });
+          widget.value = o.value;
+        }
+        try {
+          const { output } = await app.graphToPrompt();
+          const resp = await api.fetchApi("/prompt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: output }),
+          });
+          const json = await resp.json().catch(() => null);
+          if (!resp.ok) throw new Error(json?.error?.message ?? `prompt HTTP ${resp.status}`);
+          results.push({ promptId: json.prompt_id, nodeErrors: json.node_errors ?? null });
+        } finally {
+          for (const s of saved) {
+            s.widget.value = s.prev;
+            s.node.setDirtyCanvas?.(true, true);
+          }
+        }
+      }
+      return { queued: results.length, runs: results };
     }
 
     // M2: flash/highlight nodes by id (debug output).
