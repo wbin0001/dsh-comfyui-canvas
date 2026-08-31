@@ -1,6 +1,10 @@
 # dsh-comfyui-canvas（DSH 画布插件）
 
-把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，让 agent 像**副驾**一样实时操作你眼前的工作流——读写、改节点、连线、运行、查错，所见即所得，全程不离开对话。
+把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，让 agent 当你的**画布副驾**，全程不离开对话：
+
+- **画布操作**：读写工作流、改节点、连线、运行、查错——所见即所得，实时落在你眼前的画布上
+- **生产任务**：批量扫参（`batch_run`）、自动取回出图（`get_outputs`）带回对话
+- **环境维护**：一键升级 ComfyUI 核心与全部自定义节点（`upgrade`）
 
 本仓库集成了 **DSH 侧插件（画布副驾）+ ComfyUI 侧桥接节点**。需要无人值守 / 规模化执行时，可配合官方 ComfyUI MCP 服务器使用——见[「画布驱动 vs MCP」](#画布驱动-vs-mcp两种操控-comfyui-的方式)。
 

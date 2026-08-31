@@ -1,6 +1,10 @@
 # dsh-comfyui-canvas
 
-Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and let the agent act as your **canvas copilot** — reading/writing the workflow, adding nodes, wiring links, running it, and debugging errors, all live on the exact canvas you are looking at. What-you-see-is-what-the-agent-does, and the output images come back into the chat — without ever leaving the conversation.
+Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and let the agent be your **canvas copilot** — without ever leaving the conversation:
+
+- **Canvas ops** — read/write the workflow, edit nodes, wire links, run, and debug, all live and WYSIWYG on the exact canvas you are looking at
+- **Production tasks** — batch parameter sweeps (`batch_run`) and automatic output-image retrieval back into the chat (`get_outputs`)
+- **Environment upkeep** — one-click upgrade of the ComfyUI core and every custom node (`upgrade`)
 
 This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node too. For headless/scale workloads it can be paired with the official ComfyUI MCP server — see [Canvas vs MCP](#canvas-vs-mcp--two-ways-to-drive-comfyui).
 
