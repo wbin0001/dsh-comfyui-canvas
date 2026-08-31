@@ -1,5 +1,7 @@
 # dsh-comfyui-canvas
 
+> 📘 中文文档：[README.zh.md](README.zh.md)
+
 Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and merge DSH's LLM power with ComfyUI's generation into **one visual creation platform** — the agent sparks ideas, writes prompts and scripts right in the chat, applies them live to the canvas in front of you, and produces images, music, video, and 3D. From idea to finished output without ever leaving the conversation or switching front-ends:
 
 - **Canvas ops** — compose and arrange pipelines, read/write workflows, edit nodes, wire links, run, tune parameters, and debug errors, all live and WYSIWYG on the exact canvas you are looking at
