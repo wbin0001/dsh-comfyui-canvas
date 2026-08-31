@@ -16,7 +16,9 @@
     "README.zh.md",
     "cordis.patch.yml",
     "lib",
-    "comfyui-bridge"
+    "comfyui-bridge",
+    "!**/__pycache__",
+    "!**/*.pyc"
   ],
   "exports": {
     ".": "./lib/index.js",
