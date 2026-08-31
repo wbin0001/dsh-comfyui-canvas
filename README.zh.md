@@ -11,7 +11,7 @@
 | 能力 | 说明 |
 |---|---|
 | **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
-| **10 个 agent 画布工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `load_workflow` / `run` / `debug` / `config` / `upgrade`，agent 可以直接在画布上操作。 |
+| **12 个 agent 画布工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `load_workflow` / `run` / `debug` / `config` / `upgrade` / `get_outputs` / `batch_run`，agent 可以直接在画布上操作。 |
 | **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
 | **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 右侧面板宽度，实时生效。 |
@@ -107,6 +107,28 @@ cp -r $(npm root -g)/dsh-comfyui-canvas/comfyui-bridge/ComfyUI-DSH-Canvas <Comfy
    - *“运行一次”*
 3. agent 会先读 `comfyui_config` 确认当前在画布模式，然后专注画布操作。
 
+### 画布驱动 vs MCP——两种操控 ComfyUI 的方式
+
+本插件是**画布驱动**：它看到并编辑用户**正在看的那张活画布**（加节点、连线、改参数、运行，并用 `comfyui_get_outputs` 取回本次出图、用 `comfyui_batch_run` 扫参），无需保存工作流文件。
+
+如果要做**流水线/无人值守**类的批量任务，还可以在 DSH profile 里挂官方 **ComfyUI MCP 服务器（comfy-cli）**——那是一整套独立工具，本插件**刻意不重复实现**：
+
+| 能力 | 本插件（画布） | ComfyUI MCP 服务器（comfy-cli） |
+|---|---|---|
+| 操作用户正在看的活画布 | ✅ | — |
+| 直接运行已保存 / API 格式工作流文件 | ✅（经画布） | ✅（直接） |
+| 批量排队 + 取回输出图 | ✅（`batch_run` + `get_outputs`） | ✅（`run_workflow` + `fetch_outputs`） |
+| 官方工作流模板 | — | ✅（`templates`） |
+| 模型下载 / 管理 | — | ✅（`models`） |
+| 托管 / 付费模型（Flux、Veo…） | — | ✅（`partner`） |
+| 图结构预检（validate / 依赖） | ✅（`debug`，本地） | ✅（`validate`，服务端） |
+
+**推荐分工**：在画布上**构建/调优**工作流时用本插件；需要**以相同图无人值守规模化执行**（批量流水线、模板、模型管理、托管模型）时用 MCP 服务器。两者连的是同一个 ComfyUI 实例，可并存使用。接入方式：
+
+```bash
+dsh plugin add github:Comfy-Org/comfy-cli   # 并在 profile 里配置其 MCP transport
+```
+
 ---
 
 ## 环境要求
@@ -137,7 +159,7 @@ dsh-comfyui-canvas/
 │       ├── __init__.py       # ComfyUI 服务端 /dsh-bridge/* 路由
 │       └── entry/bridge.js   # 注入画布前端：上报画布 + 执行命令
 ├── lib/
-│   ├── index.js              # DSH host：10 个画布工具 + 会话隔离模式
+│   ├── index.js              # DSH host：12 个画布工具 + 会话隔离模式
 │   └── client.js             # DSH web：画布标签 / 设置页 / 对话栏增强
 ├── LICENSE
 ├── README.md

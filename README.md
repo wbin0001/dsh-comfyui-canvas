@@ -9,7 +9,7 @@ This package is the DSH-side plugin. It works together with a small ComfyUI-side
 | Surface | Description |
 |---|---|
 | **ComfyUI canvas tab** | A `ComfyUI` conversation view that embeds the local ComfyUI frontend side by side with the Chat rail. The iframe stays alive across tab switches (no reload). |
-| **10 agent tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug`, `config`, `upgrade` — operate the live canvas straight from the agent. |
+| **12 agent tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug`, `config`, `upgrade`, `get_outputs`, `batch_run` — operate the live canvas straight from the agent. |
 | **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether the browser is on the canvas tab for the current session, and focus on canvas work only then. Session-isolated. |
 | **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / rail width. Changes apply live. |
 | **Rail polish** | Image previews inside the input box, a `+` button to attach local images (DSH's official attachment path), approval popup over the canvas (split layout), send button pinned to the panel corner. |
@@ -92,6 +92,28 @@ Works on **Windows**, **macOS** and **Linux**. The agent tools talk to ComfyUI o
 2. Ask the agent to do canvas work: *"读取当前工作流"*, *"给 KSampler 设 seed 为 42"*, *"检查画布有没有报错"*, *"运行一次"*.
 3. The agent reads `comfyui_config` first, so it knows it's on the canvas and stays focused on canvas operations.
 
+### Canvas vs MCP — two ways to drive ComfyUI
+
+This plugin is the **canvas driver**: it sees and edits the *live canvas* the user is looking at (add nodes, wire links, tweak widgets, run, fetch the run's output images via `comfyui_get_outputs`, sweep parameters via `comfyui_batch_run`). It never needs a saved workflow file.
+
+For **pipeline-style / headless workloads**, you can additionally mount the official **ComfyUI MCP server** (`comfy-cli`) in your DSH profile. That is a separate set of tools that this plugin deliberately does **not** re-implement:
+
+| Capability | This plugin (canvas) | ComfyUI MCP server (comfy-cli) |
+|---|---|---|
+| Operate the live canvas the user sees | ✅ | — |
+| Run a saved / API-format workflow file | ✅ (via canvas) | ✅ (directly) |
+| Batch-queue runs + fetch output images | ✅ (`batch_run` + `get_outputs`) | ✅ (`run_workflow` + `fetch_outputs`) |
+| Official workflow templates | — | ✅ (`templates`) |
+| Model download / management | — | ✅ (`models`) |
+| Hosted/paid models (Flux, Veo, …) | — | ✅ (`partner`) |
+| Pre-flight graph validation (`validate` / deps) | ✅ (`debug`, local) | ✅ (`validate`, server) |
+
+**Recommended split**: use this plugin while you are *building/tuning* a workflow on the canvas; use the MCP server once you want to *run the same graph headlessly at scale* (batch pipelines, templates, model management, hosted models). They talk to the same ComfyUI instance and can be used side by side. Install the MCP server with:
+
+```bash
+dsh plugin add github:Comfy-Org/comfy-cli  # and configure its MCP transport in your profile
+```
+
 ## Requirements
 
 - DeepSeek Harness Web (DSH), Node `^22.19.0 || >=24`
@@ -116,7 +138,7 @@ dsh-comfyui-canvas/
 │       ├── __init__.py       # /dsh-bridge/* HTTP routes on the ComfyUI server
 │       └── entry/bridge.js   # injected frontend: reports graph + runs commands
 ├── lib/
-│   ├── index.js              # DSH host: 10 canvas tools + session-isolated mode
+│   ├── index.js              # DSH host: 12 canvas tools + session-isolated mode
 │   └── client.js             # DSH web: canvas tab / settings / rail polish
 ├── LICENSE
 ├── README.md
