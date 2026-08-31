@@ -1,15 +1,16 @@
 # dsh-comfyui-canvas
 
-Embed your **local ComfyUI** as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and give the agent **live canvas tools**: read/edit/run workflows, debug node errors, and manage the canvas — without leaving the chat.
+Your **canvas copilot** for ComfyUI inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web. ComfyUI becomes a split-screen canvas tab right beside your chat, and the agent operates **the exact workflow you are looking at — visibly**. Every add-node, wire, parameter tweak and run is applied live to the canvas you see, and the output images come back into the conversation. What-you-see-is-what-the-agent-does: a copilot, not a black box.
 
-This package is the DSH-side plugin. It works together with a small ComfyUI-side bridge node (see [Install](#install)).
+This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node too. For headless/scale workloads it can be paired with the official ComfyUI MCP server — see [Canvas vs MCP](#canvas-vs-mcp--two-ways-to-drive-comfyui).
 
 ## What you get
 
 | Surface | Description |
 |---|---|
 | **ComfyUI canvas tab** | A `ComfyUI` conversation view that embeds the local ComfyUI frontend side by side with the Chat rail. The iframe stays alive across tab switches (no reload). |
-| **12 agent tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug`, `config`, `upgrade`, `get_outputs`, `batch_run` — operate the live canvas straight from the agent. |
+| **Visual canvas copilot** | The agent operates **the canvas you are looking at** — nodes appear, links wire, widgets change and runs trigger live on screen, so you watch every step instead of trusting an opaque JSON edit. Output images come back into the chat via `comfyui_get_outputs`. |
+| **12 agent tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug`, `config`, `upgrade`, `get_outputs`, `batch_run` — from single edits to batch parameter sweeps, all from the chat. |
 | **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether the browser is on the canvas tab for the current session, and focus on canvas work only then. Session-isolated. |
 | **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / rail width. Changes apply live. |
 | **Rail polish** | Image previews inside the input box, a `+` button to attach local images (DSH's official attachment path), approval popup over the canvas (split layout), send button pinned to the panel corner. |

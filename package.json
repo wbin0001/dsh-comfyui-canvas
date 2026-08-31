@@ -1,7 +1,7 @@
 {
   "name": "dsh-comfyui-canvas",
   "version": "0.2.0",
-  "description": "Embed the local ComfyUI frontend as a split-screen canvas tab in DeepSeek Harness, and give the agent live canvas tools: read/edit/run workflows, debug errors, manage the canvas. Ships the ComfyUI-side bridge node too.",
+  "description": "Give DeepSeek Harness agents live control of your local ComfyUI canvas: embed ComfyUI as a split-screen tab, then read/edit/run workflows, debug errors, fetch output images, and batch-sweep parameters straight from the chat. Ships the ComfyUI-side bridge node.",
   "type": "module",
   "main": "lib/index.js",
   "license": "MIT",
