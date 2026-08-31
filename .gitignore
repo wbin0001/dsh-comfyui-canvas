@@ -10,3 +10,13 @@ node_modules/
 .idea/
 .DS_Store
 Thumbs.db
+*.log
+*.swp
+
+# Local secrets / env
+.env
+.env.local
+.env.*.local
+
+# Never commit DSH profile data (may contain tokens / local config)
+.dsh/

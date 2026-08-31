@@ -1,0 +1,9 @@
+# Normalize line endings to LF in the repository; Windows checkouts keep CRLF locally
+* text=auto eol=lf
+
+# Already-minified / binary assets stay untouched
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary

@@ -103,9 +103,9 @@ Works on **Windows**, **macOS** and **Linux**. The agent tools talk to ComfyUI o
 
 This plugin is the **canvas driver**: it sees and edits the *live canvas* the user is looking at (add nodes, wire links, tweak widgets, run, fetch the run's output images via `comfyui_get_outputs`, sweep parameters via `comfyui_batch_run`). It never needs a saved workflow file.
 
-For **pipeline-style / headless workloads**, you can additionally mount the official **ComfyUI MCP server** (`comfy-cli`) in your DSH profile. That is a separate set of tools that this plugin deliberately does **not** re-implement:
+For **pipeline-style / headless workloads**, ComfyUI's official **Comfy CLI** (`comfy-cli`) is a complementary tool. It is a standalone Python CLI (installed via `pip install comfy-cli`, and can also expose an MCP server) — **not** a DSH plugin, so it is used separately from this plugin rather than mounted into the DSH profile. It covers capabilities this canvas plugin deliberately does **not** re-implement:
 
-| Capability | This plugin (canvas) | ComfyUI MCP server (comfy-cli) |
+| Capability | This plugin (canvas) | ComfyUI CLI (comfy-cli) |
 |---|---|---|
 | Operate the live canvas the user sees | ✅ | — |
 | Run a saved / API-format workflow file | ✅ (via canvas) | ✅ (directly) |
@@ -115,10 +115,10 @@ For **pipeline-style / headless workloads**, you can additionally mount the offi
 | Hosted/paid models (Flux, Veo, …) | — | ✅ (`partner`) |
 | Pre-flight graph validation (`validate` / deps) | ✅ (`debug`, local) | ✅ (`validate`, server) |
 
-**Recommended split**: use this plugin while you are *building/tuning* a workflow on the canvas; use the MCP server once you want to *run the same graph headlessly at scale* (batch pipelines, templates, model management, hosted models). They talk to the same ComfyUI instance and can be used side by side. Install the MCP server with:
+**Recommended split**: use this plugin while you are *building/tuning* a workflow on the canvas; use the Comfy CLI once you want to *run the same graph headlessly at scale* (batch pipelines, templates, model management, hosted models). They talk to the same ComfyUI instance and can be used side by side. Install the Comfy CLI with:
 
 ```bash
-dsh plugin add github:Comfy-Org/comfy-cli  # and configure its MCP transport in your profile
+pip install comfy-cli   # standalone CLI, not a DSH plugin — see https://github.com/Comfy-Org/comfy-cli
 ```
 
 ## Requirements

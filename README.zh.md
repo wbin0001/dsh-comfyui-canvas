@@ -118,9 +118,9 @@ cp -r $(npm root -g)/dsh-comfyui-canvas/comfyui-bridge/ComfyUI-DSH-Canvas <Comfy
 
 本插件是**画布驱动**：它看到并编辑用户**正在看的那张活画布**（加节点、连线、改参数、运行，并用 `comfyui_get_outputs` 取回本次出图、用 `comfyui_batch_run` 扫参），无需保存工作流文件。
 
-如果要做**流水线/无人值守**类的批量任务，还可以在 DSH profile 里挂官方 **ComfyUI MCP 服务器（comfy-cli）**——那是一整套独立工具，本插件**刻意不重复实现**：
+如果要做**流水线/无人值守**类的批量任务，ComfyUI 官方的 **Comfy CLI（comfy-cli）** 是与之互补的工具。它是一个独立的 Python CLI（通过 `pip install comfy-cli` 安装，也可对外暴露 MCP 服务器）——**不是** DSH 插件，因此与本插件分开使用，而非挂进 DSH profile。它覆盖本画布插件**刻意不重复实现**的能力：
 
-| 能力 | 本插件（画布） | ComfyUI MCP 服务器（comfy-cli） |
+| 能力 | 本插件（画布） | ComfyUI CLI（comfy-cli） |
 |---|---|---|
 | 操作用户正在看的活画布 | ✅ | — |
 | 直接运行已保存 / API 格式工作流文件 | ✅（经画布） | ✅（直接） |
@@ -130,10 +130,10 @@ cp -r $(npm root -g)/dsh-comfyui-canvas/comfyui-bridge/ComfyUI-DSH-Canvas <Comfy
 | 托管 / 付费模型（Flux、Veo…） | — | ✅（`partner`） |
 | 图结构预检（validate / 依赖） | ✅（`debug`，本地） | ✅（`validate`，服务端） |
 
-**推荐分工**：在画布上**构建/调优**工作流时用本插件；需要**以相同图无人值守规模化执行**（批量流水线、模板、模型管理、托管模型）时用 MCP 服务器。两者连的是同一个 ComfyUI 实例，可并存使用。接入方式：
+**推荐分工**：在画布上**构建/调优**工作流时用本插件；需要**以相同图无人值守规模化执行**（批量流水线、模板、模型管理、托管模型）时用 Comfy CLI。两者连的是同一个 ComfyUI 实例，可并存使用。安装 Comfy CLI：
 
 ```bash
-dsh plugin add github:Comfy-Org/comfy-cli   # 并在 profile 里配置其 MCP transport
+pip install comfy-cli   # 独立 CLI，非 DSH 插件 —— 见 https://github.com/Comfy-Org/comfy-cli
 ```
 
 ---
