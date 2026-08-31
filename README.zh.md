@@ -2,9 +2,9 @@
 
 把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，让 agent 当你的**画布副驾**，全程不离开对话：
 
-- **画布操作**：读写工作流、改节点、连线、运行、查错——所见即所得，实时落在你眼前的画布上
-- **生产任务**：批量扫参（`batch_run`）、自动取回出图（`get_outputs`）带回对话
-- **环境维护**：一键升级 ComfyUI 核心与全部自定义节点（`upgrade`）
+- **画布操作**：搭建编排、读写工作流、修改节点、连线、运行、调整参数、工作流查错——所见即所得，实时落在你眼前的画布上
+- **生产任务**：批量扫参（`batch_run`）、自动取回出图（`get_outputs`）带回对话，实现图像、音乐、视频、3D 等多任务智能创作与批量生产
+- **环境维护**：一键启动 ComfyUI、一键升级核心与全部自定义节点（`upgrade`），省心维护不间断
 
 本仓库集成了 **DSH 侧插件（画布副驾）+ ComfyUI 侧桥接节点**。需要无人值守 / 规模化执行时，可配合官方 ComfyUI MCP 服务器使用——见[「画布驱动 vs MCP」](#画布驱动-vs-mcp两种操控-comfyui-的方式)。
 
@@ -16,7 +16,9 @@
 |---|---|
 | **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
 | **可视化画布副驾** | agent 操作**你正在看的画布**——节点出现、连线接上、参数变化、运行触发，全部实时显示在屏幕上，每一步都看得见，而不是黑盒改 JSON。出图经 `comfyui_get_outputs` 直接带回对话。 |
-| **12 个 agent 画布工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `load_workflow` / `run` / `debug` / `config` / `upgrade` / `get_outputs` / `batch_run`，从单点修改到批量扫参，全程对话内完成。 |
+| **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流。 |
+| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把出图直接带回对话。 |
+| **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点；`comfyui_config` 报告当前连接与画布专注状态。 |
 | **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
 | **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 右侧面板宽度，实时生效。 |

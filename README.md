@@ -2,9 +2,9 @@
 
 Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and let the agent be your **canvas copilot** — without ever leaving the conversation:
 
-- **Canvas ops** — read/write the workflow, edit nodes, wire links, run, and debug, all live and WYSIWYG on the exact canvas you are looking at
-- **Production tasks** — batch parameter sweeps (`batch_run`) and automatic output-image retrieval back into the chat (`get_outputs`)
-- **Environment upkeep** — one-click upgrade of the ComfyUI core and every custom node (`upgrade`)
+- **Canvas ops** — compose and arrange pipelines, read/write workflows, edit nodes, wire links, run, tune parameters, and debug errors, all live and WYSIWYG on the exact canvas you are looking at
+- **Production tasks** — batch parameter sweeps (`batch_run`) and automatic output-image retrieval back into the chat (`get_outputs`), powering multi-modal creative and batch generation across images, music, video, and 3D
+- **Environment upkeep** — one-click launch of ComfyUI and one-click upgrade of the core plus every custom node (`upgrade`), keeping the stack healthy without interruption
 
 This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node too. For headless/scale workloads it can be paired with the official ComfyUI MCP server — see [Canvas vs MCP](#canvas-vs-mcp--two-ways-to-drive-comfyui).
 
@@ -14,7 +14,9 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 |---|---|
 | **ComfyUI canvas tab** | A `ComfyUI` conversation view that embeds the ComfyUI frontend (local or cloud) side by side with the Chat rail. The iframe stays alive across tab switches (no reload). |
 | **Visual canvas copilot** | The agent operates **the canvas you are looking at** — nodes appear, links wire, widgets change and runs trigger live on screen, so you watch every step instead of trusting an opaque JSON edit. Output images come back into the chat via `comfyui_get_outputs`. |
-| **12 agent tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug`, `config`, `upgrade`, `get_outputs`, `batch_run` — from single edits to batch parameter sweeps, all from the chat. |
+| **Canvas ops tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `load_workflow`, `run`, `debug` — build and fix workflows on the live canvas. |
+| **Production tools** | `comfyui_batch_run` sweeps a parameter matrix (seeds/prompts/strengths) in one go; `comfyui_get_outputs` pulls the resulting images back into the chat. |
+| **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node; `comfyui_config` reports the active connection and canvas focus. |
 | **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether the browser is on the canvas tab for the current session, and focus on canvas work only then. Session-isolated. |
 | **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / rail width. Changes apply live. |
 | **Rail polish** | Image previews inside the input box, a `+` button to attach local images (DSH's official attachment path), approval popup over the canvas (split layout), send button pinned to the panel corner. |
