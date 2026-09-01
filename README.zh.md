@@ -1,6 +1,6 @@
 # dsh-comfyui-canvas（DSH 画布插件）
 
-> 📗 English：[README.md](README.md)
+> 中文 · [English](README.md)
 
 把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，把 DSH 的 LLM 能力与 ComfyUI 的生成能力合成**一个可视化创作平台**——agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
 
