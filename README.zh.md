@@ -2,6 +2,13 @@
 
 > 中文 · [English](README.md)
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.1-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
+[![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
+[![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
+[![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
+
 把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，把 DSH 的 LLM 能力与 ComfyUI 的生成能力合成**一个可视化创作平台**——agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
 
 - **画布操作**：搭建编排、读写工作流、修改节点、连线、运行、调整参数、工作流查错——所见即所得，实时落在你眼前的画布上
