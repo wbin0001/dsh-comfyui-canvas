@@ -82,6 +82,23 @@ async function resolveLiteGraph() {
   }
 }
 
+// Apply a widget value with combo validation + callback, shared by set_param
+// and inject_text. Throws on an unknown combo value so it fails loudly instead
+// of silently rendering empty, then lets the widget's own callback react.
+function applyWidgetValue(node, widget, value) {
+  widget.value = value;
+  if (widget.type === "combo" || Array.isArray(widget.options)) {
+    const labels = (Array.isArray(widget.options) ? widget.options : widget.options?.values ?? [])
+      .map((o) => (typeof o === "object" && o !== null ? (o.value ?? o[0]) : o));
+    if (labels.length > 0 && !labels.some((l) => String(l) === String(value))) {
+      throw new Error(`value ${JSON.stringify(value)} is not a valid option for ${widget.name} (${labels.join(", ")})`);
+    }
+  }
+  widget.callback?.(widget.value, widget);
+  node.onWidgetChanged?.(widget, widget.value, null, null);
+  node.setDirtyCanvas?.(true, true);
+}
+
 async function executeCommand(cmd, payload) {
   const graph = app.graph;
   const LiteGraph = await resolveLiteGraph();
@@ -116,20 +133,7 @@ async function executeCommand(cmd, payload) {
       if (!node) throw new Error(`node not found: ${nodeId}`);
       const widget = (node.widgets ?? []).find((w) => w.name === key);
       if (!widget) throw new Error(`widget not found: ${key}`);
-      widget.value = value;
-      // Combo widgets keep the selected label string in `.value`; validate it
-      // against options so an unknown value fails loudly instead of silently
-      // rendering empty, then let the widget's own callback react.
-      if (widget.type === "combo" || Array.isArray(widget.options)) {
-        const labels = (Array.isArray(widget.options) ? widget.options : widget.options?.values ?? [])
-          .map((o) => (typeof o === "object" && o !== null ? (o.value ?? o[0]) : o));
-        if (labels.length > 0 && !labels.some((l) => String(l) === String(value))) {
-          throw new Error(`value ${JSON.stringify(value)} is not a valid option for ${key} (${labels.join(", ")})`);
-        }
-      }
-      widget.callback?.(widget.value, widget);
-      node.onWidgetChanged?.(widget, widget.value, null, null);
-      node.setDirtyCanvas?.(true, true);
+      applyWidgetValue(node, widget, value);
       scheduleReport();
       return { key, value };
     }
@@ -285,6 +289,50 @@ async function executeCommand(cmd, payload) {
       return { reported: true };
     }
 
+    // v0.1.1: inject text into the canvas. Mode 2 (newClass): create a source
+    // node, set its widget, optionally connect to a target input — a one-step
+    // "conversation text → canvas node". Mode 1 (nodeId): write an existing
+    // widget directly. Both reuse applyWidgetValue so combo validation + the
+    // widget callback fire identically to set_param.
+    case "inject_text": {
+      const { text, nodeId, widgetKey = "text", newClass, targetId, targetSlot, sourceSlot = 0 } = payload;
+      if (newClass) {
+        const node = LiteGraph?.createNode?.(newClass) ?? null;
+        if (!node) throw new Error(`unknown node class: ${newClass}`);
+        graph.add(node);
+        const widget = (node.widgets ?? []).find((w) => w.name === widgetKey);
+        if (widget) applyWidgetValue(node, widget, text);
+        const connected = targetId != null && targetSlot != null;
+        if (connected) {
+          const dst = graph.getNodeById(+targetId);
+          if (!dst) throw new Error(`target node not found: ${targetId}`);
+          const ok = node.connect(+sourceSlot, dst, +targetSlot);
+          if (!ok) throw new Error("connection rejected by LiteGraph");
+        }
+        scheduleReport();
+        return { nodeId: String(node.id), created: true, type: node.type, connected };
+      }
+      if (nodeId == null) throw new Error("inject_text requires nodeId or newClass");
+      const node = graph.getNodeById(+nodeId);
+      if (!node) throw new Error(`node not found: ${nodeId}`);
+      const widget = (node.widgets ?? []).find((w) => w.name === widgetKey);
+      if (!widget) throw new Error(`widget not found: ${widgetKey}`);
+      applyWidgetValue(node, widget, text);
+      scheduleReport();
+      return { nodeId: String(nodeId), key: widgetKey, value: text };
+    }
+
+    // v0.1.1: export the current canvas as API-format workflow JSON — the
+    // format /prompt and comfy-cli run_workflow consume. Bridges the live
+    // canvas to headless/MCP batch runs.
+    case "export_api": {
+      if (typeof app.graphToPrompt !== "function") {
+        throw new Error("this ComfyUI frontend lacks app.graphToPrompt");
+      }
+      const { output } = await app.graphToPrompt();
+      return { workflow: output, nodeCount: Object.keys(output || {}).length };
+    }
+
     default:
       throw new Error(`unknown command: ${cmd}`);
   }
@@ -344,6 +392,20 @@ app.registerExtension({
         console.error("[ComfyUI-DSH-Canvas] command failed", msg.cmd, err);
         postResult(msg.id, false, err);
       }
+    });
+
+    // v0.1.1 fix: node previews (SaveImage/PreviewImage thumbnails) sometimes
+    // do not appear after a manual run inside the DSH canvas iframe, even
+    // though the images land in output/. ComfyUI's own executed handler sets
+    // node.imgs, but inside the nested iframe the canvas redraw (driven by
+    // requestAnimationFrame) may not fire afterwards, so the preview stays
+    // empty. Forcing a redraw here on every executed event closes that gap —
+    // harmless when ComfyUI already redrew, and it is exactly the event the
+    // README previously noted the bridge did not touch.
+    api.addEventListener("executed", () => {
+      try {
+        app.canvas?.setDirty?.(true, true);
+      } catch { /* never break the canvas over a redraw */ }
     });
 
     // Initial report once the canvas is ready.

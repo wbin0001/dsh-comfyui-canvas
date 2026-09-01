@@ -18,12 +18,12 @@
 |---|---|
 | **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
 | **可视化画布副驾** | agent 操作**你正在看的画布**——节点出现、连线接上、参数变化、运行触发，全部实时显示在屏幕上，每一步都看得见，而不是黑盒改 JSON。出图经 `comfyui_get_outputs` 直接带回对话。 |
-| **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流。 |
-| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把出图直接带回对话。 |
+| **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `inject_text` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流；`inject_text` 把对话文本一步注入为可连线节点。 |
+| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把出图直接带回对话；`comfyui_attach_image` 把对话里的图片送进画布 LoadImage；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
 | **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点；`comfyui_config` 报告当前连接与画布专注状态。 |
 | **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
-| **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 右侧面板宽度，实时生效。 |
+| **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 右侧面板宽度，实时生效。导航栏已自定义为 ComfyUI logo 图标。 |
 | **对话栏增强** | 图片预览并入输入框、`+` 号上传本地图片（走 DSH 官方附件通道）、画布上的授权弹窗、发送按钮贴右下角。 |
 
 ---
@@ -116,6 +116,16 @@ cp -r $(npm root -g)/dsh-comfyui-canvas/comfyui-bridge/ComfyUI-DSH-Canvas <Comfy
    - *“运行一次”*
 3. agent 会先读 `comfyui_config` 确认当前在画布模式，然后专注画布操作。
 
+### 对话产物 → 画布
+
+agent 在对话里生成的图片与文本，可直接作为 ComfyUI 工作流的节点输入，形成「对话创意 → 画布产出」闭环：
+
+- `comfyui_attach_image`：把本机一张图片上传进 ComfyUI `input/`，并可选指向某个 LoadImage 节点。走 ComfyUI 原生 `/upload/image`，不经桥接——文件读取与上传由 host 从本机发起（云端 ComfyUI 场景下 DSH 机器与 ComfyUI 机器可能不同机，必须由 host 发起）。
+- `comfyui_inject_text`：把一段文本写入某节点 widget；或新建一个源节点、填值、再连到目标输入——「对话文本作为独立可连线源」。是 `add_node + set_param + connect` 的一步封装；只改已有 widget 时 `set_param` 已够，`inject_text` 用于「新建源并连线」。
+- `comfyui_export_api`：把当前画布导出为 API 格式工作流 JSON（`/prompt` 与 comfy-cli `run_workflow` 所需格式），打通「画布 ↔ MCP」衔接——画布上调好图，导出后交 comfy-cli 无人值守批量跑。
+
+> 架构边界：文件传输（图片→`input/`）走 host + 原生 API；画布节点操作走桥接 command；读结果走原生 `/history`+`/view`，三层不混。
+
 ### 画布驱动 vs MCP——两种操控 ComfyUI 的方式
 
 本插件是**画布驱动**：它看到并编辑用户**正在看的那张活画布**（加节点、连线、改参数、运行，并用 `comfyui_get_outputs` 取回本次出图、用 `comfyui_batch_run` 扫参），无需保存工作流文件。
@@ -168,7 +178,7 @@ dsh-comfyui-canvas/
 │       ├── __init__.py       # ComfyUI 服务端 /dsh-bridge/* 路由
 │       └── entry/bridge.js   # 注入画布前端：上报画布 + 执行命令
 ├── lib/
-│   ├── index.js              # DSH host：12 个画布工具 + 会话隔离模式
+│   ├── index.js              # DSH host：15 个画布工具 + 会话隔离模式
 │   └── client.js             # DSH web：画布标签 / 设置页 / 对话栏增强
 ├── LICENSE
 ├── README.md
@@ -177,6 +187,12 @@ dsh-comfyui-canvas/
 ```
 
 **桥接节点**是唯一的 ComfyUI 侧依赖：它暴露 `/dsh-bridge/workflow | report | command | result`，并通过 `app.registerExtension` 注入画布页面；没有它 agent 工具就够不到画布。
+
+---
+
+## 已知问题
+
+_（当前无已知未决问题。此前"画布运行后节点预览不显示"已在 v0.1.1 修复：移除 iframe 的 `referrerpolicy="no-referrer"` 消除环境差异，并在 `bridge.js` 监听 ComfyUI `executed` 事件强制重绘画布。）_
 
 ---
 

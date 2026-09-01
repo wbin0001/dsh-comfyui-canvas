@@ -1,7 +1,19 @@
-# dsh-comfyui-canvas — 下个版本开发规划（v0.2.0）
+# dsh-comfyui-canvas — 下个版本开发规划（v0.1.1）
 
 > **本文档是「新会话接手说明书」**：下个版本开发请新开一个会话，先读本文件 + `docs/architecture.html`（分层架构）+ `docs/architecture-flow.html`（流程图），即可接续全部开发意图。
-> 最后更新：2026-08-31
+> 最后更新：2026-09-01
+
+> **最近一次更新（2026-09-01）**：
+> - 设置面板导航图标改为**大写「C」字母**（此前为不美观的 C 形填充样式），并**移除 label 前的 🎨 emoji**——左侧导航只显示干净的「C + ComfyUI 画布」
+> - **修复 bug「画布运行后节点预览不显示」**（README 已知问题）：手动在 DSH 画布 iframe 内运行工作流后，SaveImage/PreviewImage 节点预览缩略图不出现
+>   - 根因（已诊断确认）：DSH 画布 iframe 设置了 `referrerpolicy="no-referrer"`，与原生 ComfyUI 标签页环境不一致；且 bridge 不触碰 `executed` 事件流，iframe 内画布重绘（rAF 驱动）在 executed 后未触发
+>   - 修复：① `lib/client.js` 移除 iframe 的 `referrerpolicy`（iframe 内请求 Referer 本来就是 ComfyUI 自己的 URL，不会泄漏 DSH URL）；② `comfyui-bridge/.../entry/bridge.js` 新增监听 ComfyUI `executed` 事件 → `app.canvas.setDirty(true, true)` 强制重绘
+>   - 三处已同步：源码 → node_modules 副本 → E 盘 custom_nodes；**需重启 ComfyUI 使 bridge 改动生效**
+> - **修复 bug「画布启动按钮点不动 / 卡在正在启动…」**：在 DSH 画布直接点「启动 ComfyUI」，host 收到 `launchRequested` 后静默失败、界面永远停在"正在启动…"
+>   - 根因（已诊断确认）：host 启动 watcher 调 `shell.start(shell.resolve({ command, workdir }))` 时**没传 `sandboxPolicy`**，Windows 上 `pwsh-sandbox` 按默认 `workspace-write`（root=F:\Deepseek-harness）执行启动器——而 `ComfyUI启动器.bat` 在 **E 盘**启动 python 并写 output/temp，受限 token 下被拒、进程立即退出；且错误被 `void proc.done.catch(() => {})` 吞掉，客户端无超时、永久卡死
+>   - 修复：① `lib/index.js` 启动时显式传 `sandboxPolicy: { mode: 'danger-full-access', workspaceRoot }`（外部服务启动不受工作区沙箱限制），并把启动失败写入新增的 `launchError` 配置字段；② `lib/client.js` 启动卡片读取并展示 `launchError`，加 45s 启动超时（超时未在线则复位"正在启动…"允许重试）
+>   - 已同步：源码 → node_modules 副本；**需重启 DSH（host 改动生效）+ 刷新页面（client 改动生效）**
+> - 涉及文件：`lib/client.js` + `lib/index.js` + `comfyui-bridge/ComfyUI-DSH-Canvas/entry/bridge.js`（本仓库）+ DSH 核心 `packages/client/ui-settings-general`（navIcon 映射，不在本仓库 git 内）
 
 ---
 
@@ -57,7 +69,7 @@ comfyui_upgrade           git pull 核心 + 全部自定义节点
 
 ---
 
-## 2. 下版本目标：v0.2.0 ——「对话产物进画布」
+## 2. 下版本目标：v0.1.1 ——「对话产物进画布」
 
 ### 2.1 一句话目标
 让 **agent 在对话中生成的内容（文本 / 图片）直接作为 ComfyUI 工作流的节点输入**，形成「对话创意 → 画布产出」的闭环，无需手动切工具。
@@ -184,4 +196,4 @@ step 8  发布（见 §4）
 - **was-ns 依赖**：ComfyUI venv 的 NumPy 已固定 `<2.4`（启动器会自动校验降级），不要随意升级 numpy，否则 was-ns/numba 报错
 - **Cloud ComfyUI**：`networkMode` 支持 cloud-selfhosted/saas；云端需自行部署桥接节点 + DSH 可达 + token 两端一致
 - **安全基线**：`/dsh-bridge/*` 保护 host→bridge 通道（token）；前端上报（/report、result）不 gate；report ≤8MB；多标签 clientId 定向；命令无 client_id 时拒绝
-- **版本号策略**：v0.1.0 已发布；下版升 **0.2.0**（新增两个工具是特性级变更）
+- **版本号策略**：v0.1.0 已发布；下版升 **0.1.1**（用户指定——新增工具作为小版本增量推进，不跨次版本号）
