@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>dsh-comfyui-canvas — 架构图</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel2: #1d212b;
+    --border: #2a3040;
+    --text: #e6e9ef;
+    --muted: #9aa3b2;
+    --accent: #4f9cf9;
+    --green: #3fb27f;
+    --amber: #d9a13b;
+    --red: #d96a6a;
+    --purple: #9b7ce8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    padding: 28px 32px 40px;
+  }
+  h1 { font-size: 21px; font-weight: 650; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+  .grid { display: flex; gap: 18px; align-items: stretch; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .col-label {
+    text-align: center; font-size: 12px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); padding: 2px 0 4px;
+  }
+  .col.left .col-label { color: var(--accent); }
+  .col.right .col-label { color: var(--green); }
+
+  .box {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; position: relative;
+  }
+  .box h3 { font-size: 13px; font-weight: 650; color: var(--text); margin-bottom: 6px; }
+  .box .tag {
+    display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 20px;
+    margin-left: 6px; vertical-align: 1px; letter-spacing: .03em;
+  }
+  .tag.pkg { background: rgba(79,156,249,.16); color: var(--accent); }
+  .tag.js { background: rgba(217,161,59,.16); color: var(--amber); }
+  .tag.py { background: rgba(63,178,127,.16); color: var(--green); }
+  .tag.opt { background: rgba(155,124,232,.16); color: var(--purple); }
+  .mini { font-size: 11.5px; color: var(--muted); line-height: 1.65; }
+  .mini b { color: var(--text); font-weight: 600; }
+  .chip {
+    display: inline-block; font-size: 11px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; margin: 2px 3px 2px 0;
+  }
+  .box.accent { border-color: rgba(79,156,249,.55); }
+  .box.green { border-color: rgba(63,178,127,.55); }
+  .box.dim { opacity: .85; }
+
+  .arrow-row { display: flex; align-items: center; justify-content: center; gap: 10px; height: 40px; }
+  .arrow {
+    font-size: 15px; color: var(--accent); text-align: center; white-space: nowrap;
+  }
+  .arrow .proto {
+    display: block; font-size: 10px; color: var(--muted); letter-spacing: .04em;
+    margin-top: 1px;
+  }
+  .arrow.green { color: var(--green); }
+  .arrow.purple { color: var(--purple); }
+  .svg-arrow { display: block; }
+
+  .bridge {
+    background: linear-gradient(180deg, #1a2320, #1d2620);
+    border: 1px solid rgba(63,178,127,.5); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .bridge h3 { color: var(--green); }
+
+  .note {
+    margin-top: 20px; font-size: 11.5px; color: var(--muted); line-height: 1.8;
+    border-top: 1px solid var(--border); padding-top: 12px;
+  }
+  .note b { color: var(--text); }
+  .legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .legend span { font-size: 11px; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+</style>
+</head>
+<body>
+
+<h1>dsh-comfyui-canvas 架构图</h1>
+<div class="subtitle">DSH × 画布插件 协同架构 — 浏览器 / Host / ComfyUI 三侧交互与数据流</div>
+
+<div class="grid">
+  <!-- ===================== 左列：浏览器（DSH Web） ===================== -->
+  <div class="col left">
+    <div class="col-label">浏览器 · DeepSeek Harness Web</div>
+
+    <div class="box accent">
+      <h3>DSH 会话区 <span class="tag pkg">ui-conversation</span></h3>
+      <div class="mini">
+        <b>Chat rail</b>（对话、授权弹窗、附件）<br>
+        <b>ComfyUI 分屏标签</b>（<span class="chip">conversation.view</span>）
+        <span class="tag js">plugin client</span>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>画布标签视图 <span class="tag js">dsh-comfyui-canvas / client.js</span></h3>
+      <div class="mini">
+        顶栏：状态点 · 刷新 · 在新标签页打开<br>
+        <b>&lt;iframe&gt;</b> 常驻加载 → <b>ComfyUI 前端页面</b><br>
+        会话隔离 activeView 上报 · 探活
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="svg-arrow">
+        <svg width="150" height="22" viewBox="0 0 150 22"><path d="M4 11 H138" stroke="#4f9cf9" stroke-width="2" fill="none" marker-end="url(#ah)"/><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4f9cf9"/></marker></defs></svg>
+      </div>
+      <div class="arrow">iframe 加载<span class="proto">HTTP(S) · 同屏内嵌</span></div>
+    </div>
+
+    <div class="box green">
+      <h3>ComfyUI 前端页面 <span class="tag js">bridge.js 注入扩展</span></h3>
+      <div class="mini">
+        <b>LiteGraph 画布</b> — 用户正在看的活画布<br>
+        上报变更 / 执行命令（add/connect/set_param/run…）<br>
+        <span class="chip">graphToPrompt</span> <span class="chip">queuePrompt</span>
+      </div>
+    </div>
+
+    <div class="box dim">
+      <h3>侧边栏工作台 <span class="tag opt">可选 · better-sidebar</span></h3>
+      <div class="mini">内嵌浏览器 / 终端 / 文件等（生态插件，非本插件）</div>
+    </div>
+
+  </div>
+
+  <!-- ===================== 中缝：Host ===================== -->
+  <div class="col" style="flex:0 0 340px;">
+    <div class="col-label" style="color:#d9a13b;">DSH Host · Node 进程</div>
+
+    <div class="box">
+      <h3>Agent 循环 <span class="tag pkg">agent-loop</span></h3>
+      <div class="mini">
+        LLM 编排 · 会话隔离 · 授权审批<br>
+        agent 在对话中「副驾」式操作画布
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="arrow">工具调用<span class="proto">DSH tool layer</span></div>
+    </div>
+
+    <div class="box accent">
+      <h3>画布插件 host <span class="tag js">lib/index.js</span></h3>
+      <div class="mini">
+        <b>12 个工具</b>：read / add / connect / set_param / remove /
+        load / run / debug / config / upgrade / get_outputs / batch_run<br>
+        设置注册（baseURL / token / 启动命令 / rail 宽）
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="arrow green">HTTP<span class="proto">/dsh-bridge/* 可选 Bearer token</span></div>
+    </div>
+
+    <div class="box dim">
+      <h3>启动 watcher <span class="tag js">launchRequested</span></h3>
+      <div class="mini">用 shell 服务拉起 ComfyUI 启动命令</div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="arrow purple">MCP（可选）<span class="proto">comfy-cli · 模板/模型/批量</span></div>
+    </div>
+    <div class="box dim" style="border-color:rgba(155,124,232,.4);">
+      <h3 style="color:#9b7ce8;">ComfyUI MCP 服务器 <span class="tag opt">可选</span></h3>
+      <div class="mini">官方 comfy-cli · pip 安装 · 独立 CLI</div>
+    </div>
+  </div>
+
+  <!-- ===================== 右列：ComfyUI 服务 ===================== -->
+  <div class="col right">
+    <div class="col-label">ComfyUI 服务（本地 127.0.0.1:8188 / 云端）</div>
+
+    <div class="bridge">
+      <h3>桥接后端 <span class="tag py">ComfyUI-DSH-Canvas / __init__.py</span></h3>
+      <div class="mini">
+        路由：<span class="chip">GET /dsh-bridge/workflow</span>
+        <span class="chip">POST /dsh-bridge/report</span>
+        <span class="chip">POST /dsh-bridge/command</span>
+        <span class="chip">POST /dsh-bridge/result</span><br>
+        可选 <b>DSH_BRIDGE_TOKEN</b> 鉴权 · report 8MB 上限 ·
+        多标签 <b>clientId</b> 定向执行
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="arrow">WebSocket<span class="proto">send_sync · 命令下发 → 前端执行</span></div>
+    </div>
+
+    <div class="box">
+      <h3>ComfyUI 核心 API</h3>
+      <div class="mini">
+        <span class="chip">POST /prompt</span> 入队执行
+        <span class="chip">GET /history/:id</span> 结果
+        <span class="chip">GET /view</span> 取图
+        <span class="chip">GET /system_stats</span> 探活
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <div class="arrow">执行结果<span class="proto">output / temp 图片</span></div>
+    </div>
+
+    <div class="box">
+      <h3>出图落盘</h3>
+      <div class="mini">
+        <b>output/</b> — SaveImage 永久保存<br>
+        <b>temp/</b> — PreviewImage 临时预览<br>
+        <span class="tag js">get_outputs 拉回对话</span>
+      </div>
+    </div>
+
+    <div class="box dim">
+      <h3>custom_nodes</h3>
+      <div class="mini">含桥接节点 · 以及 LLM/视频/3D 等生态节点</div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <b>数据流（一次画布操作）：</b>
+  agent 调 host 工具 → HTTP <span style="color:#3fb27f;">/dsh-bridge/command</span> → 桥接后端 → WebSocket →
+  前端 bridge.js → LiteGraph 画布实时变化（所见即所得）→ 前端 POST result ↔ host 轮询。
+  <b>读画布：</b> <span style="color:#3fb27f;">refresh_report</span> 拉取最新 → <span style="color:#3fb27f;">/dsh-bridge/workflow</span> 返回。
+  <b>批量：</b> <span style="color:#4f9cf9;">batch_run</span> 参数矩阵逐组入队 →
+  <span style="color:#4f9cf9;">get_outputs</span> 经 <span style="color:#3fb27f;">/history + /view</span> 取回图片。
+  <b>环境：</b> <span style="color:#4f9cf9;">upgrade</span> → git pull 核心 + 自定义节点；启动按钮 → shell 拉起。
+  <b>可选 MCP：</b> comfy-cli 直接提交 API 工作流 / 模板 / 模型管理，与画布插件并存不冲突。
+  <div class="legend">
+    <span><i class="dot" style="background:#4f9cf9"></i> DSH / 插件 host</span>
+    <span><i class="dot" style="background:#3fb27f"></i> ComfyUI 桥接</span>
+    <span><i class="dot" style="background:#9b7ce8"></i> 可选 MCP</span>
+    <span><i class="dot" style="background:#2a3040"></i> 生态 / 底层</span>
+  </div>
+</div>
+
+</body>
+</html>
