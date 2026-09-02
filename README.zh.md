@@ -42,7 +42,13 @@
 ### 1. 安装 DSH 插件
 
 ```bash
-dsh plugin add github:<你的用户名>/dsh-comfyui-canvas
+dsh plugin add dsh-comfyui-canvas
+```
+
+或从 GitHub 安装：
+
+```bash
+dsh plugin add github:wbin0001/dsh-comfyui-canvas
 ```
 
 或本地安装：

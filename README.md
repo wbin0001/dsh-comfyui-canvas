@@ -37,10 +37,16 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 ### 1. Install the DSH plugin
 
 ```bash
-dsh plugin add github:<your-name>/dsh-comfyui-canvas
+dsh plugin add dsh-comfyui-canvas
 ```
 
-or from a local checkout:
+Or from a GitHub checkout:
+
+```bash
+dsh plugin add github:wbin0001/dsh-comfyui-canvas
+```
+
+Or from a local checkout:
 
 ```bash
 # in your DSH profile

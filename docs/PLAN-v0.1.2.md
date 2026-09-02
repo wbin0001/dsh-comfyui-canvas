@@ -234,6 +234,30 @@ step 12 发布（npm publish + awesome-dsh-plugin 收录信息若有变更）
 
 ---
 
+## 4.5 已完成事项（v0.1.2 前期，2026-09-02）
+
+> 这些在方案定稿前已经落地并推送（`dfbba07` / `92474a0`），记录在此避免重复实施。
+
+### 市场素材已上线
+- `docs/screenshots/` 三张演示图（01 启动提示 / 02 画布就绪 / 03 工作流出图）
+- `screenshots.json`（package.json 旁，裸数组列相对路径）
+- README 中英各嵌主图（`docs/screenshots/03-workflow-output.png`）
+- `package.json` `files` 已含 `screenshots.json` + `docs`
+- 已推送到 GitHub main（`7e3cd84..92474a0`）
+- 待 awesome-dsh-plugin 聚合刷新后市场卡片显示截图（被动等待，无需操作）
+
+### 设置导航图标（核心改动 §5.5）已落地
+- 见 §5.5 完整记录；核心已还原、非侵入式图标生效、已推送
+
+### npm publish 已完成（2026-09-02）
+- ✅ `dsh-comfyui-canvas@0.1.1` 已发布到官方 registry（https://www.npmjs.com/package/dsh-comfyui-canvas）
+- 包名未被占用；`files` 覆盖 LICENSE/README/lib/comfyui-bridge/screenshots.json/docs
+- 安装命令已更新为 `dsh plugin add dsh-comfyui-canvas`（npm 方式）
+- 发布 SOP：改版本号 → `npm config set registry https://registry.npmjs.org` → `npm publish`
+- ⚠️ 注意：账户已开 2FA（安全密钥/Passkey）；发布用 granular token（bypass 2FA，90 天有效，约 2026-12 到期）
+
+---
+
 ## 5. 不做清单（明确排除，防范围蔓延）
 
 - ❌ 视频/音频播放器、3D 查看器（DSH 生态的事）
