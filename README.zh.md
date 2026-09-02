@@ -28,7 +28,8 @@
 | **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
 | **可视化画布副驾** | agent 操作**你正在看的画布**——节点出现、连线接上、参数变化、运行触发，全部实时显示在屏幕上，每一步都看得见，而不是黑盒改 JSON。出图经 `comfyui_get_outputs` 直接带回对话。 |
 | **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `inject_text` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流；`inject_text` 把对话文本一步注入为可连线节点。 |
-| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把出图直接带回对话；`comfyui_attach_image` 把对话里的图片送进画布 LoadImage；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
+| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把产物直接带回对话——图像、视频、GIF、音频都支持；`comfyui_attach_file` 把本机任意文件（图片/音频/视频/3D）上传进 ComfyUI `input/` 供对应 Load 节点使用；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
+| **技能包（SOP）** | 内置技能教 agent 按正确顺序操作：`comfyui-canvas-ops`（读→确认→改→跑→取回→自检）、`comfyui-admin-ops`（配置/启动/升级/节点管理）、`comfyui-video-audio-ops`（视频+配音/音轨）。装插件即自带技能，无需额外配置。 |
 | **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点；`comfyui_config` 报告当前连接与画布专注状态。 |
 | **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
