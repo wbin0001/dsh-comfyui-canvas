@@ -3,7 +3,7 @@
 > [中文](README.zh.md) · English
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.1-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.2-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
 [![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
@@ -18,6 +18,8 @@ Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [Dee
 - **Environment upkeep** — one-click launch of ComfyUI and one-click upgrade of the core plus every custom node (`upgrade`), keeping the stack healthy without interruption
 
 This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node too. For headless/scale workloads it can be paired with the official ComfyUI MCP server — see [Canvas vs MCP](#canvas-vs-mcp--two-ways-to-drive-comfyui).
+
+> **Where this plugin fits**: use it while **building / tuning a workflow on the live canvas** (the "IDE" role). For **unattended / batch / production runs**, hand the exported workflow to **Comfy CLI** (`comfy-cli run_workflow`) — it runs headlessly without a browser, which this canvas plugin deliberately does not do (the agent drives the canvas you are looking at; a closed browser means no runner). Export a workflow once with `comfyui_export_api`, then script it with the CLI at scale.
 
 ## What you get
 
@@ -173,7 +175,7 @@ dsh-comfyui-canvas/
 │       ├── __init__.py       # /dsh-bridge/* HTTP routes on the ComfyUI server
 │       └── entry/bridge.js   # injected frontend: reports graph + runs commands
 ├── lib/
-│   ├── index.js              # DSH host: 15 canvas tools + session-isolated mode
+│   ├── index.js              # DSH host: 19 canvas tools + 4 built-in skills
 │   └── client.js             # DSH web: canvas tab / settings / rail polish
 ├── LICENSE
 ├── README.md

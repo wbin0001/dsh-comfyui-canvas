@@ -3,7 +3,7 @@
 > 中文 · [English](README.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.1-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.2-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
 [![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)

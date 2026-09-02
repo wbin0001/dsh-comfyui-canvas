@@ -5,7 +5,8 @@
 # 前置：npm 账号已登录（npm adduser 浏览器授权）
 
 $ErrorActionPreference = 'Stop'
-$repo = 'F:\Deepseek-harness\projects\dsh-comfyui-canvas'
+# Anchor to the script's own directory so the script works from any checkout.
+$repo = $PSScriptRoot
 Set-Location $repo
 
 Write-Host "=== 1. 切到官方 registry ===" -ForegroundColor Cyan
