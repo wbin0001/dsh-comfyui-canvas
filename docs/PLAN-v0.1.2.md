@@ -256,6 +256,23 @@ step 12 发布（npm publish + awesome-dsh-plugin 收录信息若有变更）
 - 发布 SOP：改版本号 → `npm config set registry https://registry.npmjs.org` → `npm publish`
 - ⚠️ 注意：账户已开 2FA（安全密钥/Passkey）；发布用 granular token（bypass 2FA，90 天有效，约 2026-12 到期）
 
+### 通用文件传输 A1 + A2 已实现（2026-09-02，`a73ffd4`）
+- ✅ `comfyui_attach_file`（host `lib/index.js`）：任意文件（image/audio/video/3D）上传进 ComfyUI `input/`，`mediaTypeOf` 按扩展名推断，可选 `nodeId`+`widgetKey` 指向 Load 节点
+- ✅ `comfyui_get_outputs` 泛化：扫描 `images/videos/gifs/audio` 四种 kind，每条带 `kind` + `/view` URL
+- 已同步 node_modules 副本、已推送 GitHub
+
+### 技能包 B 已实现（2026-09-02，`d1c3d07`）
+- ✅ `ctx.skills.register` 内嵌三个 runtime 技能（随插件分发、零步骤）：
+  - `comfyui-canvas-ops`（画布操作 SOP：读→确认→改→跑→取回→自检）
+  - `comfyui-admin-ops`（环境管理 SOP：配置/启动/升级/节点管理）
+  - `comfyui-video-audio-ops`（音画创作 SOP：视频+配音/音轨）
+- `inject` 加 `skills`；技能内容中英双语、含安全约定
+- 已同步 node_modules 副本、已推送 GitHub
+
+### 剩余（见 §4 实施步骤）
+- A3 画布会话框「+ 文件」通道（client 侧，硬前置：浏览器路径传递）
+- C 节点开发调试（`read_source` / `edit_source` / `reload` + `comfyui-dev-ops` 技能）
+
 ---
 
 ## 5. 不做清单（明确排除，防范围蔓延）
