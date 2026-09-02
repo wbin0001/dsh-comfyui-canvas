@@ -17,6 +17,8 @@
     "cordis.patch.yml",
     "lib",
     "comfyui-bridge",
+    "screenshots.json",
+    "docs",
     "!**/__pycache__",
     "!**/*.pyc"
   ],

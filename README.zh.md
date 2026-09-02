@@ -9,6 +9,8 @@
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
+![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-workflow-output.png)
+
 把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，把 DSH 的 LLM 能力与 ComfyUI 的生成能力合成**一个可视化创作平台**——agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
 
 - **画布操作**：搭建编排、读写工作流、修改节点、连线、运行、调整参数、工作流查错——所见即所得，实时落在你眼前的画布上
