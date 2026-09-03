@@ -5,9 +5,14 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.3-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
-[![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
+[![DSH](https://img.shields.io/badge/DSH-v0.1.1--rc.2--v0.1.x-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
+
+> **⚠️ DSH 版本兼容**：本插件基于 **DSH v0.1.1-rc.2** 开发（`conversation.view` / 分屏 rail 契约）。
+> - ✅ **可用**：DSH **v0.1.0.x – v0.1.1.x**（含 rc）
+> - ⚠️ **尚未适配**：DSH **v0.1.2+**（上游有破坏性 client 更新，分屏视图可能挂不上；v0.1.4 将适配）
+> - ❌ **非官方桌面封装**（如 `dsh-desktop` 社区版）不保证兼容——它内部跑的上游版本可能超前/滞后于本插件基线，请以官方 DSH 为准。
 
 ![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-workflow-output.png)
 
