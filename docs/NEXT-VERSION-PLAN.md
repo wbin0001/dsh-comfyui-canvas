@@ -1,19 +1,16 @@
 # dsh-comfyui-canvas — 下个版本开发规划（v0.1.1）
 
 > **本文档是「新会话接手说明书」**：下个版本开发请新开一个会话，先读本文件 + `docs/architecture.html`（分层架构）+ `docs/architecture-flow.html`（流程图），即可接续全部开发意图。
-> 最后更新：2026-09-01
+> 最后更新：2026-09-03
 
-> **最近一次更新（2026-09-01）**：
-> - 设置面板导航图标改为**大写「C」字母**（此前为不美观的 C 形填充样式），并**移除 label 前的 🎨 emoji**——左侧导航只显示干净的「C + ComfyUI 画布」
-> - **修复 bug「画布运行后节点预览不显示」**（README 已知问题）：手动在 DSH 画布 iframe 内运行工作流后，SaveImage/PreviewImage 节点预览缩略图不出现
->   - 根因（已诊断确认）：DSH 画布 iframe 设置了 `referrerpolicy="no-referrer"`，与原生 ComfyUI 标签页环境不一致；且 bridge 不触碰 `executed` 事件流，iframe 内画布重绘（rAF 驱动）在 executed 后未触发
->   - 修复：① `lib/client.js` 移除 iframe 的 `referrerpolicy`（iframe 内请求 Referer 本来就是 ComfyUI 自己的 URL，不会泄漏 DSH URL）；② `comfyui-bridge/.../entry/bridge.js` 新增监听 ComfyUI `executed` 事件 → `app.canvas.setDirty(true, true)` 强制重绘
->   - 三处已同步：源码 → node_modules 副本 → E 盘 custom_nodes；**需重启 ComfyUI 使 bridge 改动生效**
-> - **修复 bug「画布启动按钮点不动 / 卡在正在启动…」**：在 DSH 画布直接点「启动 ComfyUI」，host 收到 `launchRequested` 后静默失败、界面永远停在"正在启动…"
->   - 根因（已诊断确认）：host 启动 watcher 调 `shell.start(shell.resolve({ command, workdir }))` 时**没传 `sandboxPolicy`**，Windows 上 `pwsh-sandbox` 按默认 `workspace-write`（root=F:\Deepseek-harness）执行启动器——而 `ComfyUI启动器.bat` 在 **E 盘**启动 python 并写 output/temp，受限 token 下被拒、进程立即退出；且错误被 `void proc.done.catch(() => {})` 吞掉，客户端无超时、永久卡死
->   - 修复：① `lib/index.js` 启动时显式传 `sandboxPolicy: { mode: 'danger-full-access', workspaceRoot }`（外部服务启动不受工作区沙箱限制），并把启动失败写入新增的 `launchError` 配置字段；② `lib/client.js` 启动卡片读取并展示 `launchError`，加 45s 启动超时（超时未在线则复位"正在启动…"允许重试）
->   - 已同步：源码 → node_modules 副本；**需重启 DSH（host 改动生效）+ 刷新页面（client 改动生效）**
-> - 涉及文件：`lib/client.js` + `lib/index.js` + `comfyui-bridge/ComfyUI-DSH-Canvas/entry/bridge.js`（本仓库）+ DSH 核心 `packages/client/ui-settings-general`（navIcon 映射，不在本仓库 git 内）
+> **最新状态备忘（2026-09-03，v0.1.3 已发布版之后）**：
+> - ✅ **v0.1.3 已发布**（npm `dsh-comfyui-canvas@0.1.3` + GitHub Release v0.1.3）：项目目录 / `.runs.json` 溯源 / `outputStem` NN 命名 / 失败结构化诊断 / 文本·提示词上传 / 鉴权告警；A3（画布「+文件」按钮）已砍。
+> - ✅ **测试 + CI 已补**：`lib/utils.js` 抽取纯逻辑（mediaTypeOf / extractExecutionError / nextStemNumber / upsertRun），`test/utils.test.js` 16 个用例（`node:test`，`npm test`），`.github/workflows/test.yml`（check + test + pack，GitHub Actions 已验证绿）。
+> - ⚠️ **待办（v0.1.4）：适配官方上游破坏性更新** ——
+>   - 现象：DSH Desktop v2.0.4（社区封装版 anywhere-labs/dsh-desktop，内部跑上游 **v0.1.2-alpha.1**）用户反映「装插件后右侧面板不显示」。
+>   - 根因：插件 client 基于官方 **v0.1.1-rc.2** 开发（`conversation.view` 注入 / splitRail 分屏 / client module 契约），上游 v0.1.2 系列有**破坏性更新**（官方 release note 自述"会导致很多插件不可用"）→ 分屏视图挂不上，只剩全屏 ComfyUI 标签。
+>   - 计划：把本地 DSH 从 `0.1.1-rc.2` 升到官方最新 **`v0.1.2-rc.1`**，在最新上游上验证并修复插件兼容性，发 v0.1.4；同时解决 DSH Desktop 用户兼容。
+>   - 事实记录：DSH Desktop ≠ 官方产品（社区封装，Electron 套壳，官方 Web UI 原样加载）；其 v2.x 是桌面壳自己的版本号，上游仍跟随 0.1.x。
 
 ---
 
