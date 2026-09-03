@@ -63,6 +63,18 @@
 
 - ✅ `get_outputs` 无限超时（已修）：history fetch 15s、文件下载 fetch 30s 超时（`AbortSignal.any([exec.signal, timeout])`）
 - 桥接鉴权告警（设置页 + 画布激活，host 代理探测）——已实现（v0.1.2 后补，随 v0.1.3 发布）
+- ✅ `attach_file` 文本/提示词上传（`d58d302`）：mediaType 映射新增 txt/md/json/csv/yaml/yml/srt——提示词/批量提示词 JSON 等文本可直接进 ComfyUI `input/` 供文本类 Load 节点消费
+
+### 文件上传支持矩阵（`attach_file`，2026-09-03）
+
+| 类别 | 扩展名 | mediaType |
+|---|---|---|
+| 图片 | png / jpg / jpeg / webp / gif | image/* |
+| 音频（含音乐） | wav / mp3 / ogg / flac / m4a / aac | audio/* |
+| 视频 | mp4 / webm / mov / mkv / avi | video/* |
+| 3D | glb / gltf / obj / fbx / stl | model/* |
+| **文本/提示词** | txt / md / json / csv / yaml / yml / srt | text/plain、application/json、text/markdown、text/csv、application/yaml、application/x-subrip |
+| 其他 | 任意 | application/octet-stream 透传 |
 
 ## 不做清单（范围控制）
 
