@@ -3,7 +3,7 @@
 > 中文 · [English](README.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.2-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.3-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
 [![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
@@ -28,12 +28,14 @@
 | **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
 | **可视化画布副驾** | agent 操作**你正在看的画布**——节点出现、连线接上、参数变化、运行触发，全部实时显示在屏幕上，每一步都看得见，而不是黑盒改 JSON。出图经 `comfyui_get_outputs` 直接带回对话。 |
 | **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `inject_text` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流；`inject_text` 把对话文本一步注入为可连线节点。 |
-| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把产物直接带回对话——图像、视频、GIF、音频都支持；`comfyui_attach_file` 把本机任意文件（图片/音频/视频/3D）上传进 ComfyUI `input/` 供对应 Load 节点使用；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
-| **技能包（SOP）** | 内置技能教 agent 按正确顺序操作：`comfyui-canvas-ops`（读→确认→改→跑→取回→自检）、`comfyui-admin-ops`（配置/启动/升级/节点管理）、`comfyui-video-audio-ops`（视频+配音/音轨）。装插件即自带技能，无需额外配置。 |
-| **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点；`comfyui_config` 报告当前连接与画布专注状态。 |
+| **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把产物直接带回对话——图像、视频、GIF、音频都支持，可传 `outputStem` 自动编号（`stem.01.png`，永不覆盖）；`comfyui_attach_file` 把本机任意文件（图片/音频/视频/3D/**文本**）上传进 ComfyUI `input/` 供对应 Load 节点使用；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
+| **项目目录与溯源** | 下载默认落「项目目录」（设置页可改，默认 `<工作区>/projects`）；每次下载把 `runs.json`（promptId / overrides / 时间戳 / 文件）追加进项目目录，任意一张图都能追溯回它的生成参数。运行失败返回结构化 `executionError`（节点 id / 节点类型 / 异常类型 / 信息），不再是一堵 JSON 墙。 |
+| **技能包（SOP）** | 内置技能教 agent 按正确顺序操作：`comfyui-canvas-ops`（读→确认→改→跑→取回→自检）、`comfyui-admin-ops`（配置/启动/升级/节点管理）、`comfyui-video-audio-ops`（视频+配音/音轨）、`comfyui-dev-ops`（开发/调试自定义节点）。装插件即自带技能，无需额外配置。 |
+| **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点（并发、跳过本地改过的仓库）；`comfyui_config` 报告当前连接、画布专注状态、项目目录，以及**桥接鉴权握手检查**（`bridgeAuthEffective`）。 |
+| **节点开发工具** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload`——对话里直接读写 `custom_nodes/` 下的节点源码并重启 ComfyUI，再到画布上验证。 |
 | **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
-| **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 右侧面板宽度，实时生效。导航栏已自定义为 ComfyUI logo 图标。 |
+| **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 项目目录 / 右侧面板宽度，实时生效。导航栏已自定义为 ComfyUI logo 图标。 |
 | **对话栏增强** | 图片预览并入输入框、`+` 号上传本地图片（走 DSH 官方附件通道）、画布上的授权弹窗、发送按钮贴右下角。 |
 
 ---
@@ -208,7 +210,8 @@ dsh-comfyui-canvas/
 
 ## 已知问题
 
-_（当前无已知未决问题。此前"画布运行后节点预览不显示"已在 v0.1.1 修复：移除 iframe 的 `referrerpolicy="no-referrer"` 消除环境差异，并在 `bridge.js` 监听 ComfyUI `executed` 事件强制重绘画布。）_
+- `comfyui_reload` 目前**仅支持 Windows**（依赖 `netstat`/`taskkill`）；macOS/Linux 上会明确报错而非假装成功，需手动重启 ComfyUI。
+- 此前"画布运行后节点预览不显示"已在 v0.1.1 修复：移除 iframe 的 `referrerpolicy="no-referrer"` 消除环境差异，并在 `bridge.js` 监听 ComfyUI `executed` 事件强制重绘画布。
 
 ---
 

@@ -3,7 +3,7 @@
 > [中文](README.zh.md) · English
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.2-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.3-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
 [![DSH](https://img.shields.io/badge/DeepSeek_Harness-compatible-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
@@ -28,11 +28,13 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 | **ComfyUI canvas tab** | A `ComfyUI` conversation view that embeds the ComfyUI frontend (local or cloud) side by side with the Chat rail. The iframe stays alive across tab switches (no reload). |
 | **Visual canvas copilot** | The agent operates **the canvas you are looking at** — nodes appear, links wire, widgets change and runs trigger live on screen, so you watch every step instead of trusting an opaque JSON edit. Output images come back into the chat via `comfyui_get_outputs`. |
 | **Canvas ops tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `inject_text`, `load_workflow`, `run`, `debug` — build and fix workflows on the live canvas; `inject_text` writes conversation text straight into a node or a new wirable source. |
-| **Production tools** | `comfyui_batch_run` sweeps a parameter matrix (seeds/prompts/strengths) in one go; `comfyui_get_outputs` pulls the resulting files back into the chat — images, videos, gifs, and audio; `comfyui_attach_file` uploads any local file (image/audio/video/3D) into ComfyUI's input/ for the matching Load node; `comfyui_export_api` exports the live canvas as API-format workflow JSON for comfy-cli headless batch runs. |
-| **Skills (SOPs)** | Built-in skills teach the agent the right order of operations: `comfyui-canvas-ops` (read → confirm → edit → run → fetch → self-check), `comfyui-admin-ops` (configure/launch/upgrade/node management), and `comfyui-video-audio-ops` (video + voiceover/audio track). Install the plugin and the skills ship with it — no extra setup. |
-| **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node; `comfyui_config` reports the active connection and canvas focus. |
+| **Production tools** | `comfyui_batch_run` sweeps a parameter matrix (seeds/prompts/strengths) in one go; `comfyui_get_outputs` pulls the resulting files back into the chat — images, videos, gifs, and audio — with optional `outputStem` auto-incrementing names (`stem.01.png`, never overwrites); `comfyui_attach_file` uploads any local file (image/audio/video/3D/text) into ComfyUI's input/ for the matching Load node; `comfyui_export_api` exports the live canvas as API-format workflow JSON for comfy-cli headless batch runs. |
+| **Projects & traceability** | Downloads default to the project directory (Settings → 项目目录, default `<workspace>/projects`); every downloaded run appends `runs.json` (promptId / overrides / timestamp / files) so any output can be traced back to its parameters. Failed runs return a structured `executionError` (node id / node type / exception / message) instead of a raw JSON wall. |
+| **Skills (SOPs)** | Built-in skills teach the agent the right order of operations: `comfyui-canvas-ops` (read → confirm → edit → run → fetch → self-check), `comfyui-admin-ops` (configure/launch/upgrade/node management), `comfyui-video-audio-ops` (video + voiceover/audio track), and `comfyui-dev-ops` (develop/debug custom nodes). Install the plugin and the skills ship with it — no extra setup. |
+| **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node (concurrent, dirty-safe); `comfyui_config` reports the active connection, canvas focus, project directory, and a bridge-auth handshake check (`bridgeAuthEffective`). |
+| **Node dev tools** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload` — read and edit custom-node source under custom_nodes/ and restart ComfyUI from the conversation, then verify on the canvas. |
 | **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether the browser is on the canvas tab for the current session, and focus on canvas work only then. Session-isolated. |
-| **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / rail width. Changes apply live. Customized nav icon with ComfyUI logo. |
+| **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / project directory / rail width. Changes apply live. Customized nav icon with ComfyUI logo. |
 | **Rail polish** | Image previews inside the input box, a `+` button to attach local images (DSH's official attachment path), approval popup over the canvas (split layout), send button pinned to the panel corner. |
 
 ## Install
@@ -186,7 +188,8 @@ The **bridge** is the only ComfyUI-side dependency. It exposes `/dsh-bridge/work
 
 ## Known issues
 
-_(None pending. The former "node previews missing after a run" is fixed in v0.1.1: removed the iframe's `referrerpolicy="no-referrer"` to match the native tab environment, and `bridge.js` now listens to ComfyUI's `executed` event to force a canvas redraw.)_
+- `comfyui_reload` currently supports **Windows only** (uses `netstat`/`taskkill`); on macOS/Linux it fails loud instead of pretending, restart ComfyUI manually there.
+- The former "node previews missing after a run" is fixed in v0.1.1: removed the iframe's `referrerpolicy="no-referrer"` to match the native tab environment, and `bridge.js` now listens to ComfyUI's `executed` event to force a canvas redraw.
 
 ## License
 
