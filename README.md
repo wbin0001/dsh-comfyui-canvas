@@ -9,10 +9,10 @@
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
-> **⚠️ DSH 版本兼容**：本插件基于 **DSH v0.1.1-rc.2** 开发（`conversation.view` / split-rail 分屏契约）。
-> - ✅ **可用**：DSH **v0.1.0.x – v0.1.1.x**（含 rc）
-> - ⚠️ **尚未适配**：DSH **v0.1.2+**（上游有破坏性 client 更新，分屏视图可能挂不上；v0.1.4 将适配）
-> - ❌ **非官方桌面封装**（如 `dsh-desktop` 社区版）不保证兼容——它内部跑的上游版本可能超前/滞后于本插件的基线，请以官方 DSH 为准。
+> **⚠️ DSH version compatibility**: this plugin is built against **DSH v0.1.1-rc.2** (`conversation.view` / split-rail contracts).
+> - ✅ **Works with**: DSH **v0.1.0.x – v0.1.1.x** (including release candidates)
+> - ⚠️ **Not yet adapted**: DSH **v0.1.2+** (breaking client-side changes upstream may break the split-screen view; adaptation planned for v0.1.4)
+> - ❌ **Non-official desktop wrappers** (e.g. the community `dsh-desktop`) are not guaranteed compatible — they bundle an upstream version that may be ahead of or behind this plugin's baseline; rely on official DSH.
 
 ![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-workflow-output.png)
 
@@ -34,7 +34,7 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 | **Visual canvas copilot** | The agent operates **the canvas you are looking at** — nodes appear, links wire, widgets change and runs trigger live on screen, so you watch every step instead of trusting an opaque JSON edit. Output images come back into the chat via `comfyui_get_outputs`. |
 | **Canvas ops tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `inject_text`, `load_workflow`, `run`, `debug` — build and fix workflows on the live canvas; `inject_text` writes conversation text straight into a node or a new wirable source. |
 | **Production tools** | `comfyui_batch_run` sweeps a parameter matrix (seeds/prompts/strengths) in one go; `comfyui_get_outputs` pulls the resulting files back into the chat — images, videos, gifs, and audio — with optional `outputStem` auto-incrementing names (`stem.01.png`, never overwrites); `comfyui_attach_file` uploads any local file (image/audio/video/3D/text) into ComfyUI's input/ for the matching Load node; `comfyui_export_api` exports the live canvas as API-format workflow JSON for comfy-cli headless batch runs. |
-| **Projects & traceability** | Downloads default to the project directory (Settings → 项目目录, default `<workspace>/projects`); every downloaded run appends `runs.json` (promptId / overrides / timestamp / files) so any output can be traced back to its parameters. Failed runs return a structured `executionError` (node id / node type / exception / message) instead of a raw JSON wall. |
+| **Projects & traceability** | Downloads default to the project directory (Settings → Project directory, default `<workspace>/projects`); every downloaded run appends `runs.json` (promptId / overrides / timestamp / files) so any output can be traced back to its parameters. Failed runs return a structured `executionError` (node id / node type / exception / message) instead of a raw JSON wall. |
 | **Skills (SOPs)** | Built-in skills teach the agent the right order of operations: `comfyui-canvas-ops` (read → confirm → edit → run → fetch → self-check), `comfyui-admin-ops` (configure/launch/upgrade/node management), `comfyui-video-audio-ops` (video + voiceover/audio track), and `comfyui-dev-ops` (develop/debug custom nodes). Install the plugin and the skills ship with it — no extra setup. |
 | **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node (concurrent, dirty-safe); `comfyui_config` reports the active connection, canvas focus, project directory, and a bridge-auth handshake check (`bridgeAuthEffective`). |
 | **Node dev tools** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload` — read and edit custom-node source under custom_nodes/ and restart ComfyUI from the conversation, then verify on the canvas. |
@@ -97,13 +97,13 @@ Then restart ComfyUI and load the canvas page once (the injected `bridge.js` rep
 
 ### 3. Configure
 
-Open **Settings → ComfyUI 画布** and set the ComfyUI base URL (default `http://127.0.0.1:8188`), port, network mode, optional bridge token, launch command, and the right-side rail width.
+Open **Settings → ComfyUI Canvas** and set the ComfyUI base URL (default `http://127.0.0.1:8188`), port, network mode, optional bridge token, launch command, and the right-side rail width.
 
 The **launch command** differs by platform:
 
 | Platform | Example |
 |---|---|
-| Windows | `ComfyUI启动器.bat` (or `python main.py`) |
+| Windows | `ComfyUI启动器.bat` (the launcher script; or `python main.py`) |
 | macOS | `python main.py` or `./start.sh` |
 | Linux | `python main.py` or `./start.sh` |
 
@@ -113,7 +113,7 @@ The bridge (`/dsh-bridge/*`) is the only network surface this plugin adds to Com
 
 - **Trust model.** By default the bridge is unauthenticated, matching ComfyUI's own `/prompt` trust model — anyone who can reach the ComfyUI port can read the canvas, report state, and dispatch commands (`load_workflow`/`run` consume GPU). Commands are whitelisted on the frontend, so no arbitrary code execution is possible, but the surface is real.
 - **Bind to loopback.** Keep ComfyUI on `127.0.0.1` unless you explicitly need LAN/cloud access. `networkMode` is informational; the actual bind is whatever ComfyUI was launched with (`--listen`).
-- **Optional shared token.** Set a token in **Settings → ComfyUI 画布 → 桥接 Token** AND launch ComfyUI with the same value in its own environment (`DSH_BRIDGE_TOKEN=...`). When the token is set, every agent-initiated request — reading the canvas, dispatching a command, polling its result — must present `Authorization: Bearer <token>`; the host side sends it automatically and the bridge rejects requests without it. The frontend's own status reporting (`/report`, result callbacks) stays open, since the injected page cannot hold the token; those endpoints only mutate the in-memory snapshot and never dispatch execution. Leave it empty on both sides for the default open behavior.
+- **Optional shared token.** Set a token in **Settings → ComfyUI Canvas → Bridge Token** AND launch ComfyUI with the same value in its own environment (`DSH_BRIDGE_TOKEN=...`). When the token is set, every agent-initiated request — reading the canvas, dispatching a command, polling its result — must present `Authorization: Bearer <token>`; the host side sends it automatically and the bridge rejects requests without it. The frontend's own status reporting (`/report`, result callbacks) stays open, since the injected page cannot hold the token; those endpoints only mutate the in-memory snapshot and never dispatch execution. Leave it empty on both sides for the default open behavior.
 - **Multiple tabs are safe.** Commands are targeted at the last-reporting frontend (`clientId`), so several open ComfyUI tabs do not each execute a command.
 
 ## Platform support
@@ -123,7 +123,7 @@ Works on **Windows**, **macOS** and **Linux**. The agent tools talk to ComfyUI o
 ## Usage
 
 1. Open a conversation, switch to the **ComfyUI** tab — the canvas splits on the left, chat on the right.
-2. Ask the agent to do canvas work: *"读取当前工作流"*, *"给 KSampler 设 seed 为 42"*, *"检查画布有没有报错"*, *"运行一次"*.
+2. Ask the agent to do canvas work: *"read the current workflow"*, *"set KSampler seed to 42"*, *"check the canvas for errors"*, *"run it"*.
 3. The agent reads `comfyui_config` first, so it knows it's on the canvas and stays focused on canvas operations.
 
 ### Conversation → canvas
