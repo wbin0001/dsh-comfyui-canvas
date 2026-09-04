@@ -14,7 +14,7 @@
 
 ![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-workflow-output.png)
 
-Embed your **ComfyUI** (local or cloud) as a split-screen canvas tab inside [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web, and merge DSH's LLM power with ComfyUI's generation into **one visual creation platform** — the agent sparks ideas, writes prompts and scripts right in the chat, applies them live to the canvas in front of you, and produces images, music, video, and 3D. From idea to finished output without ever leaving the conversation or switching front-ends:
+**From chat to canvas to artwork — drive ComfyUI as a visual workflow IDE inside DSH.** Embed **ComfyUI** (local or cloud) as a split-screen canvas in [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web: the agent sparks ideas, writes prompts and scripts right in the chat, applies them live to the canvas in front of you, and produces images, music, video, and 3D. From idea to finished output without ever leaving the conversation or switching front-ends:
 
 - **Canvas ops** — compose and arrange pipelines, read/write workflows, edit nodes, wire links, run, tune parameters, and debug errors, all live and WYSIWYG on the exact canvas you are looking at
 - **Production tasks** — batch parameter sweeps (`batch_run`) and automatic output-image retrieval back into the chat (`get_outputs`), powering multi-modal creative and batch generation across images, music, video, and 3D
