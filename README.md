@@ -9,7 +9,7 @@
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
-> **✅ DSH version compatibility (since v0.1.4)**: the split-screen layout is **fully self-contained** in the plugin — it uses only official DSH slots (`conversation.view`, `conversation.session.header.utilities`) and DOM `data-*` anchors, with **zero core modifications**. Works on any official DSH **v0.1.x** (including v0.1.2+ with the breaking client refresh) without patches. The earlier split-rail implementation depended on private core patches; v0.1.4 removes that dependency entirely.
+> **✅ DSH version compatibility (since v0.1.4)**: the split-screen layout is **fully self-contained** in the plugin — it uses only official DSH slots (`conversation.session.header.utilities`) and DOM `data-*` anchors, with **zero core modifications**. Works on any official DSH **v0.1.x** (including v0.1.2+ with the breaking client refresh) without patches. The earlier split-rail implementation depended on private core patches; v0.1.4 removes that dependency entirely.
 > - ❌ **Non-official desktop wrappers** (e.g. the community `dsh-desktop`) are not guaranteed compatible — they bundle an upstream version that may be ahead of or behind this plugin's baseline; rely on official DSH.
 
 ![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-workflow-output.png)

@@ -9,7 +9,7 @@
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
-> **✅ DSH 版本兼容（v0.1.4 起）**：分屏布局已完全**自包含**在插件内——只用官方 DSH 插槽（`conversation.view`、`conversation.session.header.utilities`）与 DOM `data-*` 锚点，**零核心改动**。任何官方 DSH **v0.1.x**（含带破坏性 client 更新的 v0.1.2+）都开箱即用、无需补丁。此前分屏 rail 依赖 DSH 私有核心补丁，v0.1.4 已彻底移除该依赖。
+> **✅ DSH 版本兼容（v0.1.4 起）**：分屏布局已完全**自包含**在插件内——只用官方 DSH 插槽（`conversation.session.header.utilities`）与 DOM `data-*` 锚点，**零核心改动**。任何官方 DSH **v0.1.x**（含带破坏性 client 更新的 v0.1.2+）都开箱即用、无需补丁。此前分屏 rail 依赖 DSH 私有核心补丁，v0.1.4 已彻底移除该依赖。
 > - ❌ **非官方桌面封装**（如 `dsh-desktop` 社区版）不保证兼容——它内部跑的上游版本可能超前/滞后于本插件基线，请以官方 DSH 为准。
 
 ![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-workflow-output.png)
