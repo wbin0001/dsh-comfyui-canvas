@@ -3,20 +3,18 @@
 > 中文 · [English](README.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.3-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.4-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
-[![DSH](https://img.shields.io/badge/DSH-v0.1.1--rc.2--v0.1.x-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
+[![DSH](https://img.shields.io/badge/DSH-v0.1.x-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
-> **⚠️ DSH 版本兼容**：本插件基于 **DSH v0.1.1-rc.2** 开发（`conversation.view` / 分屏 rail 契约）。
-> - ✅ **可用**：DSH **v0.1.0.x – v0.1.1.x**（含 rc）
-> - ⚠️ **尚未适配**：DSH **v0.1.2+**（上游有破坏性 client 更新，分屏视图可能挂不上；v0.1.4 将适配）
+> **✅ DSH 版本兼容（v0.1.4 起）**：分屏布局已完全**自包含**在插件内——只用官方 DSH 插槽（`conversation.view`、`conversation.session.header.utilities`）与 DOM `data-*` 锚点，**零核心改动**。任何官方 DSH **v0.1.x**（含带破坏性 client 更新的 v0.1.2+）都开箱即用、无需补丁。此前分屏 rail 依赖 DSH 私有核心补丁，v0.1.4 已彻底移除该依赖。
 > - ❌ **非官方桌面封装**（如 `dsh-desktop` 社区版）不保证兼容——它内部跑的上游版本可能超前/滞后于本插件基线，请以官方 DSH 为准。
 
 ![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-workflow-output.png)
 
-把 **ComfyUI**（本地或云端）以分屏画布标签嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，把 DSH 的 LLM 能力与 ComfyUI 的生成能力合成**一个可视化创作平台**——agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
+把 **ComfyUI**（本地或云端）以画布分屏嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，把 DSH 的 LLM 能力与 ComfyUI 的生成能力合成**一个可视化创作平台**——agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
 
 - **画布操作**：搭建编排、读写工作流、修改节点、连线、运行、调整参数、工作流查错——所见即所得，实时落在你眼前的画布上
 - **生产任务**：批量扫参（`batch_run`）、自动取回出图（`get_outputs`）带回对话，实现图像、音乐、视频、3D 等多任务智能创作与批量生产
@@ -30,7 +28,8 @@
 
 | 能力 | 说明 |
 |---|---|
-| **画布标签页** | 对话里新增 `ComfyUI` 标签，左边画布、右边对话 rail 分屏。iframe 常驻不重载，切标签秒回。 |
+| **画布分屏入口** | 点会话标头右侧的 **ComfyUI** 按钮进入**画布左 + 对话 rail 右**的分屏形态——画布内嵌 ComfyUI 前端（本地/云端），右侧是官方对话 rail，边看画布边发消息让 agent 操控。iframe 常驻不重载，再点按钮即关闭分屏。 |
+| **分屏布局（自包含）** | ComfyUI 按钮 = 画布左 + 对话右，状态按会话隔离。只用官方插槽（`conversation.session.header.utilities`）+ DOM `data-*` 锚点与 CSS 变量，**零核心改动**，上游样式变化也不受影响。 |
 | **可视化画布副驾** | agent 操作**你正在看的画布**——节点出现、连线接上、参数变化、运行触发，全部实时显示在屏幕上，每一步都看得见，而不是黑盒改 JSON。出图经 `comfyui_get_outputs` 直接带回对话。 |
 | **画布操作工具** | `comfyui_read_workflow` / `add_node` / `connect` / `set_param` / `remove_node` / `inject_text` / `load_workflow` / `run` / `debug`——在活画布上搭建与修复工作流；`inject_text` 把对话文本一步注入为可连线节点。 |
 | **生产工具** | `comfyui_batch_run` 一次扫参数矩阵（seed / prompt / 强度）；`comfyui_get_outputs` 把产物直接带回对话——图像、视频、GIF、音频都支持，可传 `outputStem` 自动编号（`stem.01.png`，永不覆盖）；`comfyui_attach_file` 把本机任意文件（图片/音频/视频/3D/**文本**）上传进 ComfyUI `input/` 供对应 Load 节点使用；`comfyui_export_api` 把当前画布导出为 API 格式工作流，供 comfy-cli 无人值守批量。 |
@@ -38,10 +37,10 @@
 | **技能包（SOP）** | 内置技能教 agent 按正确顺序操作：`comfyui-canvas-ops`（读→确认→改→跑→取回→自检）、`comfyui-admin-ops`（配置/启动/升级/节点管理）、`comfyui-video-audio-ops`（视频+配音/音轨）、`comfyui-dev-ops`（开发/调试自定义节点）。装插件即自带技能，无需额外配置。 |
 | **维护工具** | `comfyui_upgrade` 一键升级 ComfyUI 核心与全部 git 自定义节点（并发、跳过本地改过的仓库）；`comfyui_config` 报告当前连接、画布专注状态、项目目录，以及**桥接鉴权握手检查**（`bridgeAuthEffective`）。 |
 | **节点开发工具** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload`——对话里直接读写 `custom_nodes/` 下的节点源码并重启 ComfyUI，再到画布上验证。 |
-| **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否在画布标签，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
+| **画布专注模式（会话隔离）** | agent 通过 `comfyui_config` 感知当前会话是否开启画布分屏，只在画布场景专注画布操作，且**按会话隔离**——多个会话互不干扰。 |
 | **ComfyUI 报错处理** | `debug` 校验工作流并高亮报错节点（纯校验，不触发执行），agent 帮你定位/修复画布错误。 |
 | **设置页** | ComfyUI 地址 / 端口 / 网络模式 / 桥接 Token / 启动命令 / 项目目录 / 右侧面板宽度，实时生效。导航栏已自定义为 ComfyUI logo 图标。 |
-| **对话栏增强** | 图片预览并入输入框、`+` 号上传本地图片（走 DSH 官方附件通道）、画布上的授权弹窗、发送按钮贴右下角。 |
+| **对话栏** | 分屏 rail 复用官方完整对话（消息、输入、发送、贴图、授权弹窗全在），不再需要插件自绘迷你输入框与授权 overlay。 |
 
 ---
 
@@ -131,7 +130,7 @@ cp -r $(npm root -g)/dsh-comfyui-canvas/comfyui-bridge/ComfyUI-DSH-Canvas <Comfy
 
 ## 使用
 
-1. 打开一个会话，切换到 **ComfyUI** 标签——左边是画布，右边是对话。
+1. 打开一个会话，点会话标头右侧的 **ComfyUI** 按钮——进入**画布左 + 对话 rail 右**的分屏形态（再点一次即关闭分屏，回到纯对话）。
 2. 直接让 agent 干画布活：
    - *“读取当前工作流”*
    - *“给 KSampler 设 seed 为 42”*
@@ -202,7 +201,7 @@ dsh-comfyui-canvas/
 │       └── entry/bridge.js   # 注入画布前端：上报画布 + 执行命令
 ├── lib/
 │   ├── index.js              # DSH host：15 个画布工具 + 会话隔离模式
-│   └── client.js             # DSH web：画布标签 / 设置页 / 对话栏增强
+│   └── client.js             # DSH web：分屏画布（画布左+对话右）/ 设置页
 ├── LICENSE
 ├── README.md
 ├── README.zh.md              # 本文档

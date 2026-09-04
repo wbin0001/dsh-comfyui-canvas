@@ -3,15 +3,13 @@
 > [中文](README.zh.md) · English
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.3-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
+[![Version](https://img.shields.io/badge/version-0.1.4-brightgreen.svg)](https://github.com/wbin0001/dsh-comfyui-canvas/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/wbin0001/dsh-comfyui-canvas.svg?style=social)](https://github.com/wbin0001/dsh-comfyui-canvas)
-[![DSH](https://img.shields.io/badge/DSH-v0.1.1--rc.2--v0.1.x-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
+[![DSH](https://img.shields.io/badge/DSH-v0.1.x-blueviolet.svg)](https://github.com/DeepSeek-Harness/DSH)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-0.34+-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 [![Canvas](https://img.shields.io/badge/canvas-split--screen-teal.svg)](docs/architecture.html)
 
-> **⚠️ DSH version compatibility**: this plugin is built against **DSH v0.1.1-rc.2** (`conversation.view` / split-rail contracts).
-> - ✅ **Works with**: DSH **v0.1.0.x – v0.1.1.x** (including release candidates)
-> - ⚠️ **Not yet adapted**: DSH **v0.1.2+** (breaking client-side changes upstream may break the split-screen view; adaptation planned for v0.1.4)
+> **✅ DSH version compatibility (since v0.1.4)**: the split-screen layout is **fully self-contained** in the plugin — it uses only official DSH slots (`conversation.view`, `conversation.session.header.utilities`) and DOM `data-*` anchors, with **zero core modifications**. Works on any official DSH **v0.1.x** (including v0.1.2+ with the breaking client refresh) without patches. The earlier split-rail implementation depended on private core patches; v0.1.4 removes that dependency entirely.
 > - ❌ **Non-official desktop wrappers** (e.g. the community `dsh-desktop`) are not guaranteed compatible — they bundle an upstream version that may be ahead of or behind this plugin's baseline; rely on official DSH.
 
 ![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-workflow-output.png)
@@ -30,7 +28,7 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 
 | Surface | Description |
 |---|---|
-| **ComfyUI canvas tab** | A `ComfyUI` conversation view that embeds the ComfyUI frontend (local or cloud) side by side with the Chat rail. The iframe stays alive across tab switches (no reload). |
+| **ComfyUI canvas split** | Clicking the **ComfyUI** button in the session header drops you straight into **canvas-on-the-left + chat-rail-on-the-right** split mode — the canvas embeds the ComfyUI frontend (local or cloud) alongside the official conversation rail, so you can chat with the agent while watching it drive the canvas. The iframe stays alive (no reload); click the button again to exit split. |
 | **Visual canvas copilot** | The agent operates **the canvas you are looking at** — nodes appear, links wire, widgets change and runs trigger live on screen, so you watch every step instead of trusting an opaque JSON edit. Output images come back into the chat via `comfyui_get_outputs`. |
 | **Canvas ops tools** | `comfyui_read_workflow`, `add_node`, `connect`, `set_param`, `remove_node`, `inject_text`, `load_workflow`, `run`, `debug` — build and fix workflows on the live canvas; `inject_text` writes conversation text straight into a node or a new wirable source. |
 | **Production tools** | `comfyui_batch_run` sweeps a parameter matrix (seeds/prompts/strengths) in one go; `comfyui_get_outputs` pulls the resulting files back into the chat — images, videos, gifs, and audio — with optional `outputStem` auto-incrementing names (`stem.01.png`, never overwrites); `comfyui_attach_file` uploads any local file (image/audio/video/3D/text) into ComfyUI's input/ for the matching Load node; `comfyui_export_api` exports the live canvas as API-format workflow JSON for comfy-cli headless batch runs. |
@@ -38,9 +36,9 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 | **Skills (SOPs)** | Built-in skills teach the agent the right order of operations: `comfyui-canvas-ops` (read → confirm → edit → run → fetch → self-check), `comfyui-admin-ops` (configure/launch/upgrade/node management), `comfyui-video-audio-ops` (video + voiceover/audio track), and `comfyui-dev-ops` (develop/debug custom nodes). Install the plugin and the skills ship with it — no extra setup. |
 | **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node (concurrent, dirty-safe); `comfyui_config` reports the active connection, canvas focus, project directory, and a bridge-auth handshake check (`bridgeAuthEffective`). |
 | **Node dev tools** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload` — read and edit custom-node source under custom_nodes/ and restart ComfyUI from the conversation, then verify on the canvas. |
-| **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether the browser is on the canvas tab for the current session, and focus on canvas work only then. Session-isolated. |
+| **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether canvas split mode is active for the current session, and focus on canvas work only then. Session-isolated. |
 | **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / project directory / rail width. Changes apply live. Customized nav icon with ComfyUI logo. |
-| **Rail polish** | Image previews inside the input box, a `+` button to attach local images (DSH's official attachment path), approval popup over the canvas (split layout), send button pinned to the panel corner. |
+| **Split layout** | The **ComfyUI** button in the session header opens canvas-on-the-left + official chat rail on the right (state is session-isolated). Only data-* anchors and CSS variables are used — no DSH core class names, so the layout survives upstream styling changes. |
 
 ## Install
 
@@ -122,7 +120,7 @@ Works on **Windows**, **macOS** and **Linux**. The agent tools talk to ComfyUI o
 
 ## Usage
 
-1. Open a conversation, switch to the **ComfyUI** tab — the canvas splits on the left, chat on the right.
+1. Open a conversation and click the **ComfyUI** button in the session header — the canvas appears on the left with the Chat rail (messages + input) on the right, so you can instruct the agent while watching it work the canvas. Click the button again to exit split mode.
 2. Ask the agent to do canvas work: *"read the current workflow"*, *"set KSampler seed to 42"*, *"check the canvas for errors"*, *"run it"*.
 3. The agent reads `comfyui_config` first, so it knows it's on the canvas and stays focused on canvas operations.
 
@@ -183,7 +181,7 @@ dsh-comfyui-canvas/
 │       └── entry/bridge.js   # injected frontend: reports graph + runs commands
 ├── lib/
 │   ├── index.js              # DSH host: 19 canvas tools + 4 built-in skills
-│   └── client.js             # DSH web: canvas tab / settings / rail polish
+│   └── client.js             # DSH web: split canvas (left) + chat rail (right) / settings
 ├── LICENSE
 ├── README.md
 └── package.json
