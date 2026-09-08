@@ -37,7 +37,7 @@ This package is the DSH-side plugin, and it ships the ComfyUI-side bridge node t
 | **Upkeep tool** | `comfyui_upgrade` one-click updates the ComfyUI core and every git-backed custom node (concurrent, dirty-safe); `comfyui_config` reports the active connection, canvas focus, project directory, and a bridge-auth handshake check (`bridgeAuthEffective`). |
 | **Node dev tools** | `comfyui_read_source` / `comfyui_edit_source` / `comfyui_reload` — read and edit custom-node source under custom_nodes/ and restart ComfyUI from the conversation, then verify on the canvas. |
 | **Canvas focus mode** | The agent can tell (via `comfyui_config`) whether canvas split mode is active for the current session, and focus on canvas work only then. Session-isolated. |
-| **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / project directory / rail width. Changes apply live. Customized nav icon with ComfyUI logo. |
+| **Settings page** | ComfyUI base URL / port / network mode / bridge token / launch command / project directory / rail width. Changes apply live. Shows the plugin version and supports check / one-click update (installs the latest npm release; a DSH restart is required). Customized nav icon with ComfyUI logo. |
 | **Split layout** | The **ComfyUI** button in the session header opens canvas-on-the-left + official chat rail on the right (state is session-isolated). Only data-* anchors and CSS variables are used — no DSH core class names, so the layout survives upstream styling changes. |
 
 ## Install
