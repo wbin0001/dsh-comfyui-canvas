@@ -12,7 +12,7 @@
 > **✅ DSH version compatibility (since v0.1.4)**: the split-screen layout is **fully self-contained** in the plugin — it uses only official DSH slots (`conversation.session.header.utilities`) and DOM `data-*` anchors, with **zero core modifications**. Works on any official DSH **v0.1.x** (including v0.1.2+ with the breaking client refresh) without patches. The earlier split-rail implementation depended on private core patches; v0.1.4 removes that dependency entirely.
 > - ❌ **Non-official desktop wrappers** (e.g. the community `dsh-desktop`) are not guaranteed compatible — they bundle an upstream version that may be ahead of or behind this plugin's baseline; rely on official DSH.
 
-![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-workflow-output.png)
+![dsh-comfyui-canvas demo — agent drives a live ComfyUI workflow and fetches the output grid back into the chat](docs/screenshots/03-output-grid.png)
 
 **From chat to canvas to artwork — drive ComfyUI as a visual workflow IDE inside DSH.** Embed **ComfyUI** (local or cloud) as a split-screen canvas in [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web: the agent sparks ideas, writes prompts and scripts right in the chat, applies them live to the canvas in front of you, and produces images, music, video, and 3D. From idea to finished output without ever leaving the conversation or switching front-ends:
 

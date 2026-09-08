@@ -12,7 +12,7 @@
 > **✅ DSH 版本兼容（v0.1.4 起）**：分屏布局已完全**自包含**在插件内——只用官方 DSH 插槽（`conversation.session.header.utilities`）与 DOM `data-*` 锚点，**零核心改动**。任何官方 DSH **v0.1.x**（含带破坏性 client 更新的 v0.1.2+）都开箱即用、无需补丁。此前分屏 rail 依赖 DSH 私有核心补丁，v0.1.4 已彻底移除该依赖。
 > - ❌ **非官方桌面封装**（如 `dsh-desktop` 社区版）不保证兼容——它内部跑的上游版本可能超前/滞后于本插件基线，请以官方 DSH 为准。
 
-![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-workflow-output.png)
+![dsh-comfyui-canvas 演示 —— agent 驱动实时 ComfyUI 工作流，把出图网格直接带回对话](docs/screenshots/03-output-grid.png)
 
 **从对话到画布再到作品——DSH 里驾驭 ComfyUI 的可视化工作流 IDE。** 把 **ComfyUI**（本地或云端）以画布分屏嵌入 [DeepSeek Harness](https://github.com/DeepSeek-Harness/DSH) Web，agent 在对话里激发创意、书写提示词与脚本，实时落到你眼前的画布上，产出图像、音乐、视频、3D。从灵感到成品，全程不离开对话，不用切换任何前端工具：
 
