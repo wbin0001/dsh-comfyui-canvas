@@ -20,3 +20,8 @@ Thumbs.db
 
 # Never commit DSH profile data (may contain tokens / local config)
 .dsh/
+
+# Internal development plans / handover docs — kept local only, never pushed
+# to the public repo or shipped in the npm package.
+docs/PLAN-*.md
+docs/NEXT-VERSION-PLAN.md
