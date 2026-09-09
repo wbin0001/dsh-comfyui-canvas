@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mediaTypeOf, extractExecutionError, nextStemNumber, upsertRun } from '../lib/utils.js'
+import { mediaTypeOf, extractExecutionError, nextStemNumber, upsertRun, expandBatchMatrix } from '../lib/utils.js'
 
 test('mediaTypeOf maps known extensions', () => {
   assert.equal(mediaTypeOf('png'), 'image/png')
@@ -149,4 +149,71 @@ test('upsertRun handles non-array input as empty', () => {
   const out = upsertRun(undefined, { promptId: 'p1', files: [] })
   assert.equal(out.length, 1)
   assert.equal(out[0].run, 1)
+})
+
+test('expandBatchMatrix passes runs through unchanged', () => {
+  const runs = [{ overrides: [{ nodeId: 3, key: 'seed', value: 1 }] }]
+  assert.equal(expandBatchMatrix({ runs }), runs)
+})
+
+test('expandBatchMatrix zip mode pairs values by slot', () => {
+  const runs = expandBatchMatrix({
+    matrix: {
+      mode: 'zip',
+      fields: [
+        { nodeId: 3, key: 'seed', values: [1, 2, 3] },
+        { nodeId: 6, key: 'prompt', values: ['a', 'b', 'c'] },
+      ],
+    },
+  })
+  assert.equal(runs.length, 3)
+  assert.deepEqual(runs[0].overrides, [
+    { nodeId: 3, key: 'seed', value: 1 },
+    { nodeId: 6, key: 'prompt', value: 'a' },
+  ])
+  assert.deepEqual(runs[2].overrides, [
+    { nodeId: 3, key: 'seed', value: 3 },
+    { nodeId: 6, key: 'prompt', value: 'c' },
+  ])
+})
+
+test('expandBatchMatrix zip mode rejects unequal field lengths', () => {
+  assert.throws(() => expandBatchMatrix({
+    matrix: {
+      mode: 'zip',
+      fields: [
+        { nodeId: 3, key: 'seed', values: [1, 2] },
+        { nodeId: 6, key: 'prompt', values: ['a'] },
+      ],
+    },
+  }), /equal-length/)
+})
+
+test('expandBatchMatrix product mode builds the cartesian set', () => {
+  const runs = expandBatchMatrix({
+    matrix: {
+      mode: 'product',
+      fields: [
+        { nodeId: 3, key: 'seed', values: [1, 2] },
+        { nodeId: 6, key: 'prompt', values: ['a', 'b'] },
+      ],
+    },
+  })
+  assert.equal(runs.length, 4)
+  const seen = runs.map((r) => r.overrides.map((o) => `${o.nodeId}:${o.key}=${o.value}`).join('|')).sort()
+  assert.deepEqual(seen, [
+    '3:seed=1|6:prompt=a',
+    '3:seed=1|6:prompt=b',
+    '3:seed=2|6:prompt=a',
+    '3:seed=2|6:prompt=b',
+  ])
+})
+
+test('expandBatchMatrix requires runs or matrix', () => {
+  assert.throws(() => expandBatchMatrix({}), /requires either/)
+})
+
+test('expandBatchMatrix validates fields', () => {
+  assert.throws(() => expandBatchMatrix({ matrix: { fields: [] } }), /non-empty/)
+  assert.throws(() => expandBatchMatrix({ matrix: { fields: [{ nodeId: 3 }] } }), /field invalid/)
 })

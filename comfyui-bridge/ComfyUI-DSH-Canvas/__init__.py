@@ -7,6 +7,10 @@
 # M3: optional shared-token auth (DSH_BRIDGE_TOKEN), report body size limit,
 #     and per-tab command targeting via the last-reported clientId.
 
+# Bridge release version. The DSH plugin compares this against its embedded
+# copy (see version.json) to decide whether an update is needed.
+__version__ = "0.1.6"
+
 import os
 import time
 import uuid

@@ -322,6 +322,82 @@ async function executeCommand(cmd, payload) {
       return { nodeId: String(nodeId), key: widgetKey, value: text };
     }
 
+    // v0.1.6: clear the canvas to a blank workflow (new-workflow semantics).
+    // graph.clear() is the LiteGraph-native reset; afterwards the canvas is
+    // empty and ready to be built up node by node.
+    case "clear": {
+      graph.clear?.();
+      scheduleReport();
+      return { cleared: true, nodes: 0 };
+    }
+
+    // v0.1.6: group nodes into named groups (complex-workflow organization).
+    // Uses LiteGraph's native group API (graph._groups). Availability varies
+    // across custom frontends, so `list` reports groupingAvailable so the
+    // agent can degrade gracefully instead of hard-failing.
+    case "group": {
+      const { action, title, id, nodeIds } = payload ?? {};
+      const groups = graph?._groups ?? null;
+      if (!Array.isArray(groups)) {
+        return {
+          groupingAvailable: false,
+          error: "this ComfyUI frontend does not expose LiteGraph groups",
+        };
+      }
+      switch (action) {
+        case "add": {
+          if (!title || typeof title !== "string") throw new Error("group add requires payload.title");
+          const nodeObjs = (Array.isArray(nodeIds) ? nodeIds : []).map((n) => graph.getNodeById(+n)).filter(Boolean);
+          const group = new LiteGraph.LGraphGroup(title);
+          for (const n of nodeObjs) group.addNode?.(n);
+          groups.push(group);
+          scheduleReport();
+          return { groupingAvailable: true, id: groups.indexOf(group), title: group.title, nodes: nodeObjs.map((n) => String(n.id)) };
+        }
+        case "rename": {
+          const g = groups[+id];
+          if (!g) throw new Error(`group not found: ${id}`);
+          g.title = String(title ?? g.title);
+          scheduleReport();
+          return { groupingAvailable: true, id: +id, title: g.title };
+        }
+        case "add_nodes": {
+          const g = groups[+id];
+          if (!g) throw new Error(`group not found: ${id}`);
+          const added = [];
+          for (const n of Array.isArray(nodeIds) ? nodeIds : []) {
+            const node = graph.getNodeById(+n);
+            if (node && !(g.nodes ?? []).includes(node)) { g.addNode?.(node); added.push(String(n)); }
+          }
+          scheduleReport();
+          return { groupingAvailable: true, id: +id, added };
+        }
+        case "remove_nodes": {
+          const g = groups[+id];
+          if (!g) throw new Error(`group not found: ${id}`);
+          const removed = [];
+          for (const n of Array.isArray(nodeIds) ? nodeIds : []) {
+            const node = graph.getNodeById(+n);
+            if (node && (g.nodes ?? []).includes(node)) { g.removeNode?.(node); removed.push(String(n)); }
+          }
+          scheduleReport();
+          return { groupingAvailable: true, id: +id, removed };
+        }
+        case "list": {
+          return {
+            groupingAvailable: true,
+            groups: groups.map((g, i) => ({
+              id: i,
+              title: g.title ?? "",
+              nodes: (g.nodes ?? []).map((n) => String(n.id)),
+            })),
+          };
+        }
+        default:
+          throw new Error(`group action must be add|rename|add_nodes|remove_nodes|list, got ${String(action)}`);
+      }
+    }
+
     // v0.1.1: export the current canvas as API-format workflow JSON — the
     // format /prompt and comfy-cli run_workflow consume. Bridges the live
     // canvas to headless/MCP batch runs.
