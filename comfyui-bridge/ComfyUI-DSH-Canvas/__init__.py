@@ -9,7 +9,7 @@
 
 # Bridge release version. The DSH plugin compares this against its embedded
 # copy (see version.json) to decide whether an update is needed.
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 import os
 import time

@@ -25,3 +25,6 @@ Thumbs.db
 # to the public repo or shipped in the npm package.
 docs/PLAN-*.md
 docs/NEXT-VERSION-PLAN.md
+
+# local emergency backups
+*.bak-*
